@@ -1,0 +1,98 @@
+[
+  {
+    "query": "Создай список \"Работа\" на доске \"Test Board\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "create",
+      "name_board": "Test Board",
+      "new_name_list": "Работа"
+    }
+  },
+  {
+    "query": "Добавь список \"Задачи\" на доску \"Test Board\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "create",
+      "name_board": "Test Board",
+      "new_name_list": "Задачи"
+    }
+  },
+  {
+    "query": "Получи список \"Задачи\" на доске \"Test Board\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "get",
+      "name_board": "Test Board",
+      "name_list": "Задачи"
+    }
+  },
+  {
+    "query": "Выведи информацию о списке \"Задачи\" на доске \"Test Board\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "get",
+      "name_board": "Test Board",
+      "name_list": "Задачи"
+    }
+  },
+  {
+    "query": "Переименуй список \"Задачи\" на доске \"Test Board\" в \"В процессе\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "update",
+      "name_board": "Test Board",
+      "name_list": "Задачи",
+      "new_name_list": "В процессе"
+    }
+  },
+  {
+    "query": "Измени название списка \"List\" на доске \"Test Board\" на \"In Progress\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "update",
+      "name_board": "Test Board",
+      "name_list": "List",
+      "new_name_list": "In Progress"
+    }
+  },
+  {
+    "query": "Архивируй список \"В процессе\" на доске \"Test Board\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "update",
+      "name_board": "Test Board",
+      "name_list": "В процессе",
+      "closed": "true"
+    }
+  },
+  {
+    "query": "Сделай список \"List\" на доске \"Test Board\" архивным",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "update",
+      "name_board": "Test Board",
+      "name_list": "List",
+      "closed": "true"
+    }
+  },
+  {
+    "query": "Верни список \"В процессе\" на доске \"Test Board\" из архива",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "update",
+      "name_board": "Test Board",
+      "name_list": "В процессе",
+      "closed": "false"
+    }
+  },
+  {
+    "query": "Разархивируй список \"List\" на доске \"Test Board\"",
+    "expected_function": "trello_list_action",
+    "expected_arguments": {
+      "action": "update",
+      "name_board": "Test Board",
+      "name_list": "List",
+      "closed": "false"
+    }
+  }
+]
