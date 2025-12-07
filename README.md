@@ -91,13 +91,11 @@ tests/suites/weather.json
 python tests/test_runner.py --function <имя_функции> --tests tests/suites/<файл>.json --verbose
 ```
 ```commandline
-python tests/test_runner.py --function get_weather_report --tests tests/suites/weather.json --verbose
 python -m tests.test_runner --function trello_list_action --tests tests/suites/trello_list_action.json --verbose
 ```
 
 
 ## 📊 Результаты тестов
-- Snapshots сохраняются в snapshots/<имя_функции>/<номер>.json и используются для регресс‑проверки.
 - Отчёты сохраняются в test_results/<имя_функции>/tests_<timestamp>.json.
 - Результаты выполнения функций сохраняются в test_results/<имя_функции>/exec_<timestamp>.json.
 
