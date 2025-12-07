@@ -1,0 +1,42 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+
+# --- Virtual environment ---
+.venv/
+env/
+venv/
+
+# --- PyCharm / JetBrains IDE ---
+.idea/
+*.iml
+*.ipr
+*.iws
+
+
+
+# --- Environment / Config ---
+.env
+
+# --- Snapshots & Test artifacts ---
+snapshots/
+test_snapshots/
+test_results/
+
+# --- Logs & Temp ---
+*.log
+*.tmp
+*.bak
+*.DS_Store
+Thumbs.db
+
+# --- Coverage / Reports ---
+.coverage
+htmlcov/
+.cache/
+pytest_cache/
