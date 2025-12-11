@@ -1,0 +1,31 @@
+[
+  {
+    "description": "Сначала прибавить 1 к числу, затем взять квадратный корень результата",
+    "query": "Возьми число 8, прибавь 1 и потом вычисли квадратный корень",
+    "expected_function": "add_num",
+    "expected_arguments": {
+      "num": 8
+    },
+    "next_function": {
+      "name": "sqrt_num",
+      "arguments": {
+        "num": 9
+      }
+    }
+  },
+  {
+    "description": "Сначала прибавить 5432 к числу, затем взять квадратный корень результата",
+    "query": "Возьми число 5432, прибавь 543 и потом вычисли квадратный корень",
+    "expected_function": "add_num",
+    "expected_arguments": {
+      "num1": 5432,
+      "num2": 543
+    },
+    "next_function": {
+      "name": "sqrt_num",
+      "arguments": {
+        "num": 10862
+      }
+    }
+  }
+]
