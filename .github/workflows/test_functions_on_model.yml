@@ -22,7 +22,7 @@ jobs:
       - name: Checkout function repo
         uses: actions/checkout@v4
 
-      # Чекаутим репозиторий с test_runner.py
+      # Чекаутим репозиторий с test_runner.py и pyproject.toml
       - name: Checkout test-functions repo
         uses: actions/checkout@v4
         with:
@@ -39,12 +39,14 @@ jobs:
         run: pip install uv
 
       - name: Install dependencies
+        working-directory: ${{ inputs.checkout_path }}
         run: uv sync
 
       - name: Run suite
+        working-directory: ${{ inputs.checkout_path }}
         run: |
           base="${{ inputs.function_name }}"
-          python ${{ inputs.checkout_path }}/test_runner.py \
-            --function "$base.py" \
-            --schema "$base.json" \
-            --tests "$base.yaml"
+          python test_runner.py \
+            --function "../$base.py" \
+            --schema "../$base.json" \
+            --tests "../$base.yaml"
