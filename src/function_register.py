@@ -1,4 +1,5 @@
-import importlib
+import importlib.util
+import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -20,6 +21,8 @@ class FunctionRegistry:
 
     @staticmethod
     def execute(name: str, args: dict[str, Any]) -> str:
+        if name not in FunctionRegistry._functions:
+            raise KeyError(f"Функция '{name}' не найдена в реестре")
         return FunctionRegistry._functions[name].func(args)
 
     @staticmethod
@@ -29,30 +32,36 @@ class FunctionRegistry:
         return FunctionRegistry._functions[name].schema
 
     @staticmethod
-    def function(schema: dict[str, Any]):
-        def decorator(func: Callable[[dict[str, Any]], str]):
-            func_name = func.__name__
-            Validator.validate_signature(func)
-            Validator.validate_schema(schema, func_name)
+    def register_from_file(py_file: str, schema_file: str):
+        """Импортирует модуль из файла и регистрирует функцию по схеме"""
+        module_name = os.path.splitext(os.path.basename(py_file))[0]
 
-            FunctionRegistry._functions[func_name] = FunctionInfo(
-                name=func_name,
-                func=func,
-                schema=schema,
-                module=func.__module__,
-            )
-            return func
-        return decorator
+        spec = importlib.util.spec_from_file_location(module_name, py_file)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Не удалось создать spec для {py_file}")
+        
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
 
-    @staticmethod
-    def import_functions(project_root: str) -> None:
-        functions_dir = os.path.join(project_root, "src", "functions")
-        if os.path.exists(functions_dir):
-            for file in os.listdir(functions_dir):
-                if file.endswith(".py") and not file.startswith("__"):
-                    module_name = f"src.functions.{file[:-3]}"
-                    try:
-                        importlib.import_module(module_name)
-                        print(f"📥 Импортирован модуль: {module_name}")
-                    except Exception as e:
-                        print(f"❌ Ошибка импорта {module_name}: {e}")
+        # Загружаем схему
+        with open(schema_file, encoding="utf-8") as f:
+            schema = json.load(f)
+
+        func_name = schema["name"]
+        if not hasattr(module, func_name):
+            raise ValueError(f"Функция '{func_name}' не найдена в модуле {py_file}")
+
+        func = getattr(module, func_name)
+
+        # Валидация
+        Validator.validate_signature(func)
+        Validator.validate_schema(schema, func_name)
+
+        # Регистрируем строго по имени из схемы
+        FunctionRegistry._functions[func_name] = FunctionInfo(
+            name=func_name,
+            func=func,
+            schema=schema,
+            module=module_name,
+        )
+        print(f"📥 Зарегистрирована функция: {func_name}")

@@ -1,10 +1,9 @@
-import json
 from typing import Any
-
+import json
 from openai import OpenAI
+from openai.types.chat import ChatCompletionToolParam
 
-from configurates.config import OPENROUTER_API_KEY, USE_CACHE
-from src.cache_manager import CacheManager
+from configurates.config import OPENROUTER_API_KEY
 
 
 class OpenRouterClient:
@@ -16,7 +15,6 @@ class OpenRouterClient:
         self.api_key = OPENROUTER_API_KEY
         self.client = OpenAI(base_url=base_url, api_key=self.api_key)
         self.model = model
-        self.cache = CacheManager(enabled=USE_CACHE)
         self.role = "Ты ассистент с поддержкой tools."
 
     def call_with_functions(
@@ -26,26 +24,26 @@ class OpenRouterClient:
         temperature: float = 0.1,
         max_tokens: int = 500,
     ) -> dict[str, Any]:
-        key = f"{user_query}:{json.dumps(function_schemas, sort_keys=True, ensure_ascii=False)}"
-
-        cached = self.cache.get(key)
-        if cached:
-            return cached
+        # формируем список инструментов напрямую из dict схем
+        tools: list[ChatCompletionToolParam] = [
+            ChatCompletionToolParam(type="function", function=f)
+            for f in function_schemas
+        ]
 
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-				{"role": "system", "content": self.role},
-				{"role": "user", "content": user_query},
-			],
-            tools=[{"type": "function", "function": f} for f in function_schemas],
+                {"role": "system", "content": self.role},
+                {"role": "user", "content": user_query},
+            ],
+            tools=tools,
             tool_choice="auto",
             temperature=temperature,
             max_tokens=max_tokens,
         )
 
         message = response.choices[0].message
-        result = {
+        result: dict[str, Any] = {
             "user_query": user_query,
             "model": self.model,
             "timestamp": response.created,
@@ -56,30 +54,28 @@ class OpenRouterClient:
             },
         }
 
-        if getattr(message, "tool_calls", None):
-            tool_calls = []
-            for tool_call in message.tool_calls:
-                if tool_call.type == "function":
-                    try:
-                        args = json.loads(tool_call.function.arguments)
-                    except json.JSONDecodeError:
-                        args = tool_call.function.arguments
-                    tool_calls.append(
-                        {
-                            "id": tool_call.id,
-                            "type": tool_call.type,
-                            "function": {
-                                "name": tool_call.function.name,
-                                "arguments": args,
-                            },
-                        }
-                    )
-            result["message"]["tool_calls"] = tool_calls
+        # безопасная итерация по tool_calls
+        tool_calls = message.tool_calls or []
+        parsed_calls = []
+        for tool_call in tool_calls:
+            if tool_call.type == "function":
+                try:
+                    args = json.loads(tool_call.function.arguments)
+                except json.JSONDecodeError:
+                    args = tool_call.function.arguments
+                parsed_calls.append(
+                    {
+                        "id": tool_call.id,
+                        "type": tool_call.type,
+                        "function": {
+                            "name": tool_call.function.name,
+                            "arguments": args,
+                        },
+                    }
+                )
 
-            # для обратной совместимости оставляем первый вызов
-            if tool_calls:
-                result["message"]["function_call"] = tool_calls[0]["function"]
+        if parsed_calls:
+            result["message"]["tool_calls"] = parsed_calls
+            result["message"]["function_call"] = parsed_calls[0]["function"]
 
-        # сохраняем в кэш
-        self.cache.set(key, result)
         return result

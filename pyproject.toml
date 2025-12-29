@@ -3,6 +3,22 @@ name = "function-api-calling"
 version = "0.2.0"
 description = "Тесты и функции для API"
 requires-python = ">=3.12"
+dependencies = [
+    "openai>=2.14.0",
+    "pyyaml>=6.0.2",
+    "rich>=14.2.0",
+    "pytest>=7.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=25.11.0",
+    "ruff>=0.14.8",
+    "pytest-mock>=3.10.0",
+    "mypy_extensions>=1.1.0",
+    "typing_extensions>=4.15.0",
+]
+
 
 [tool.setuptools.packages.find]
 where = ["src", "configurates"]
