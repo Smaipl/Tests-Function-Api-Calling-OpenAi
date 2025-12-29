@@ -1,0 +1,11 @@
+name: Run Function Tests
+
+on:
+  workflow_dispatch:  
+
+jobs:
+  call-tests:
+    uses: Smaipl/Tests-Function-Api-Calling-OpenAi/.github/workflows/function-tests.yml@main
+    with:
+      function_name: "w"
+      checkout_path: "runner-code"

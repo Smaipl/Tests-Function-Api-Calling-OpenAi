@@ -1,0 +1,50 @@
+name: Function Tests
+
+on:
+  workflow_call:
+    inputs:
+      function_name:
+        description: "Имя функции для проверки (без расширения)"
+        required: true
+        type: string
+      checkout_path:
+        description: "Папка для runner репозитория"
+        required: false
+        default: "test-functions"
+        type: string
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Чекаутим репозиторий с функцией (тот, где лежат w.py, w.json, w.yaml)
+      - name: Checkout function repo
+        uses: actions/checkout@v4
+
+      # Чекаутим репозиторий с test_runner.py
+      - name: Checkout test-functions repo
+        uses: actions/checkout@v4
+        with:
+          repository: Smaipl/Tests-Function-Api-Calling-OpenAi
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ inputs.checkout_path }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run suite
+        run: |
+          base="${{ inputs.function_name }}"
+          python ${{ inputs.checkout_path }}/test_runner.py \
+            --function "$base.py" \
+            --schema "$base.json" \
+            --tests "$base.yaml"
