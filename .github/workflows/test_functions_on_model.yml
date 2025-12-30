@@ -10,7 +10,7 @@ on:
       checkout_path:
         description: "Папка для runner репозитория"
         required: false
-        default: "test-functions"
+        default: "test-functions_on_model"
         type: string
 
 jobs:

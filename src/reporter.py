@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 from rich.console import Console
 from rich.table import Table
 
@@ -22,7 +23,9 @@ class LocalReporter:
                 func = chain[0]["function"]
                 result = chain[0]["result"]
                 query = detail.get("query", "")
-                table.add_row(str(i), func, query[:40] + ("..." if len(query) > 40 else ""), str(result))
+                table.add_row(
+                    str(i), func, query[:40] + ("..." if len(query) > 40 else ""), str(result)
+                )
 
         console.print(table)
 
@@ -42,7 +45,7 @@ class CIReporter:
                 f.write("### Результаты тестов\n\n")
                 for i, detail in enumerate(results.get("details", []), 1):
                     f.write(f"#### Тест {i}\n")
-                    f.write(f"- Запрос: {detail.get('query','')}\n")
+                    f.write(f"- Запрос: {detail.get('query', '')}\n")
                     for step in detail.get("execution_chain", []):
                         f.write(f"- Функция: {step['function']}\n")
                         f.write(f"- Результат: {step['result']}\n\n")

@@ -3,11 +3,11 @@ import json
 import os
 import traceback
 
-import yaml 
+import yaml
 
 from src.function_register import FunctionRegistry
 from src.openrouter_client import OpenRouterClient
-from src.reporter import LocalReporter, CIReporter
+from src.reporter import CIReporter, LocalReporter
 
 
 def run_tests_for_function(args, test_cases):
@@ -24,9 +24,7 @@ def run_tests_for_function(args, test_cases):
 
     schemas = [FunctionRegistry.get_schema(schema_name)]
 
-
     client = OpenRouterClient()
-
 
     for i, test_case in enumerate(test_cases, 1):
         print(f"\n🔍 Тест {i}/{len(test_cases)}: '{test_case['query']}'")
@@ -56,10 +54,14 @@ def run_tests_for_function(args, test_cases):
                     print(f"➡️ Вызов {idx}: {func_name}({func_args})")
                     try:
                         execution_result = FunctionRegistry.execute(func_name, func_args)
-                        execution_chain.append({"function": func_name, "result": execution_result})
+                        execution_chain.append(
+                            {"function": func_name, "result": execution_result}
+                        )
                         print(f"⚙️ Результат {func_name}: {execution_result}")
                     except Exception as e:
-                        execution_chain.append({"function": func_name, "result": f"Ошибка выполнения: {e}"})
+                        execution_chain.append(
+                            {"function": func_name, "result": f"Ошибка выполнения: {e}"}
+                        )
                         print(f"❌ Ошибка выполнения {func_name}: {e}")
 
             elif function_call:
@@ -71,7 +73,9 @@ def run_tests_for_function(args, test_cases):
                     execution_chain.append({"function": func_name, "result": execution_result})
                     print(f"⚙️ Результат {func_name}: {execution_result}")
                 except Exception as e:
-                    execution_chain.append({"function": func_name, "result": f"Ошибка выполнения: {e}"})
+                    execution_chain.append(
+                        {"function": func_name, "result": f"Ошибка выполнения: {e}"}
+                    )
                     print(f"❌ Ошибка выполнения {func_name}: {e}")
 
             test_result["execution_chain"] = execution_chain
@@ -86,7 +90,6 @@ def run_tests_for_function(args, test_cases):
             results["details"].append(test_result)
 
     return results
-
 
 
 def main():
@@ -113,7 +116,6 @@ def main():
         CIReporter().report(results, "test_results.json")
     else:
         LocalReporter().report(results)
-
 
 
 if __name__ == "__main__":

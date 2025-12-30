@@ -1,11 +1,12 @@
 import json
 
+
 def weather(arguments: dict) -> str:
     """
-    Простая тестовая функция: принимает словарь {"city": <название>} 
+    Простая тестовая функция: принимает словарь {"city": <название>}
     и возвращает JSON-строку с погодой.
     """
-    city = arguments.get("city","")
+    city = arguments.get("city", "")
 
     fake_data = {
         "Минск": {"temperature": -2, "condition": "snow"},

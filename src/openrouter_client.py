@@ -1,5 +1,6 @@
-from typing import Any
 import json
+from typing import Any
+
 from openai import OpenAI
 from openai.types.chat import ChatCompletionToolParam
 
@@ -26,8 +27,7 @@ class OpenRouterClient:
     ) -> dict[str, Any]:
         # формируем список инструментов напрямую из dict схем
         tools: list[ChatCompletionToolParam] = [
-            ChatCompletionToolParam(type="function", function=f)
-            for f in function_schemas
+            ChatCompletionToolParam(type="function", function=f) for f in function_schemas
         ]
 
         response = self.client.chat.completions.create(

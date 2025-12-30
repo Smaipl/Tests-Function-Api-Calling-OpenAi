@@ -1,7 +1,7 @@
 import inspect
 from collections.abc import Callable
-from inspect import Parameter
 from typing import Any
+
 
 class Validator:
     @staticmethod
@@ -14,15 +14,11 @@ class Validator:
                 f"Функция {func.__name__} должна принимать ровно 1 аргумент, получено {len(params)}"
             )
 
-        if params[0].annotation is inspect._empty or params[0].annotation != dict:
-            raise ValueError(
-                f"Функция {func.__name__} должна принимать аргумент типа dict"
-            )
-
-        if sig.return_annotation is inspect._empty or sig.return_annotation != str:
-            raise ValueError(
-                f"Функция {func.__name__} должна возвращать значение типа str"
-            )
+        if params[0].annotation is inspect._empty or params[0].annotation is not dict:
+            raise ValueError(f"Функция {func.__name__} должна принимать аргумент типа dict")
+        
+        if sig.return_annotation is inspect._empty or sig.return_annotation is not str:
+            raise ValueError(f"Функция {func.__name__} должна возвращать значение типа str")
 
     @staticmethod
     def validate_schema(schema: dict[str, Any], func_name: str) -> None:
@@ -30,7 +26,9 @@ class Validator:
         required_top = ["name", "description", "parameters"]
         for field in required_top:
             if field not in schema:
-                raise ValueError(f"Схема для {func_name} не содержит обязательное поле '{field}'")
+                raise ValueError(
+                    f"Схема для {func_name} не содержит обязательное поле '{field}'"
+                )
 
         if schema["name"] != func_name:
             raise ValueError(
@@ -54,4 +52,6 @@ class Validator:
             if "enum" in prop_def and not isinstance(prop_def["enum"], list):
                 raise ValueError(f"Поле 'enum' в свойстве '{prop_name}' должно быть списком")
             if prop_def in not_support:
-                raise ValueError(f"Поле '{prop_def}' в свойстве '{prop_name}' не поддерживается!")
+                raise ValueError(
+                    f"Поле '{prop_def}' в свойстве '{prop_name}' не поддерживается!"
+                )
