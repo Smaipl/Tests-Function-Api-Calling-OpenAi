@@ -1,4 +1,4 @@
-name: Function Tests
+name: Function Tests (Docker)
 
 on:
   workflow_call:
@@ -6,11 +6,6 @@ on:
       function_name:
         description: "Имя функции для проверки (без расширения)"
         required: true
-        type: string
-      checkout_path:
-        description: "Папка для runner репозитория"
-        required: false
-        default: "test-functions_on_model"
         type: string
     secrets:
       OPENROUTER_API_KEY:
@@ -22,36 +17,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout function repo
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Checkout test-functions repo
-        uses: actions/checkout@v4
+      # Кэшируем слои Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
         with:
-          repository: Smaipl/Tests-Function-Api-Calling-OpenAi
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: ${{ inputs.checkout_path }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Build Docker image
+        run: |
+          docker build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
+            -t function-tests .
 
-      - name: Install uv
-        run: pip install uv
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: Install dependencies
-        working-directory: ${{ inputs.checkout_path }}
-        run: uv sync
-
-      - name: Run suite
-        working-directory: ${{ inputs.checkout_path }}
+      - name: Run tests in Docker
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
-          base="${{ inputs.function_name }}"
-          OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
-          uv run python test_runner.py \
-            --function "../$base.py" \
-            --schema "../$base.json" \
-            --tests "../$base.yaml"
+          docker run --rm \
+            -e OPENROUTER_API_KEY=$OPENROUTER_API_KEY \
+            function-tests \
+            --function "${{ inputs.function_name }}.py" \
+            --schema "${{ inputs.function_name }}.json" \
+            --tests "${{ inputs.function_name }}.yaml"
