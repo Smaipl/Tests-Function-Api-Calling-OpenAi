@@ -33,13 +33,7 @@ jobs:
           cd tests-repo
           docker build -t function-tests .
 
-      # Проверяем виртуальное окружение
-      - name: Test virtual environment
-        run: |
-          docker run --rm function-tests /app/.venv/bin/python -c "import yaml; print('yaml available')"
-          docker run --rm function-tests /app/.venv/bin/python -c "import openai; print('openai available')"
-
-      # Запускаем контейнер и монтируем код из репо А внутрь
+      # Запускаем контейнер и сохраняем вывод в файл
       - name: Run tests in Docker
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -51,4 +45,19 @@ jobs:
             /app/.venv/bin/python test_runner.py \
               --function "/function_code/${{ inputs.function_name }}.py" \
               --schema "/function_code/${{ inputs.function_name }}.json" \
-              --tests "/function_code/${{ inputs.function_name }}.yaml"
+              --tests "/function_code/${{ inputs.function_name }}.yaml" \
+          > results.json
+
+      # Красиво форматируем JSON в summary
+      - name: Write summary
+        run: |
+          echo "### Результаты тестов" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          jq -r '.details[] | "#### Тест \(.query)\n- Функция: \(.execution_chain[0].function)\n- Результат: \(.execution_chain[0].result)\n"' results.json >> $GITHUB_STEP_SUMMARY
+
+      # Сохраняем артефакт для скачивания
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: results.json
