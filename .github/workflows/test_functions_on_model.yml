@@ -17,27 +17,25 @@ jobs:
 
     steps:
       # Чекаутим репозиторий с функцией (репо А)
-      - name: Checkout function repo
+      - name: Checkout function repo (A)
         uses: actions/checkout@v4
 
-      # Чекаутим репозиторий с Dockerfile (репо B)
-      - name: Checkout docker/tests repo
+      # Чекаутим репозиторий с Dockerfile и тестами (репо B)
+      - name: Checkout docker/tests repo (B)
         uses: actions/checkout@v4
         with:
           repository: Smaipl/Tests-Function-Api-Calling-OpenAi
           path: tests-repo
+
+      # Копируем requirements.txt из репо А в репо B
+      - name: Copy requirements from repo A to repo B
+        run: cp requirements.txt tests-repo/requirements.txt
 
       # Собираем Docker-образ из репо B
       - name: Build Docker image
         run: |
           cd tests-repo
           docker build -t function-tests .
-
-      # Проверяем виртуальное окружение
-      - name: Test virtual environment
-        run: |
-          docker run --rm function-tests /app/.venv/bin/python -c "import yaml; print('yaml available')"
-          docker run --rm function-tests /app/.venv/bin/python -c "import openai; print('openai available')"
 
       # Запускаем контейнер и сохраняем stdout в файл
       - name: Run tests in Docker
