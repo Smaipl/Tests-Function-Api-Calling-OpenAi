@@ -16,15 +16,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Чекаутим вызывающий репозиторий (с функцией)
+      # Чекаутим репозиторий с функцией (репо А)
       - name: Checkout function repo
         uses: actions/checkout@v4
 
-      # Собираем образ из текущего репо (где лежит Dockerfile)
-      - name: Build Docker image
-        run: docker build -t function-tests .
+      # Чекаутим репозиторий с Dockerfile (репо B)
+      - name: Checkout docker/tests repo
+        uses: actions/checkout@v4
+        with:
+          repository: Smaipl/Tests-Function-Api-Calling-OpenAi
+          path: tests-repo
 
-      # Запускаем контейнер и монтируем код из вызывающего репо внутрь
+      # Собираем Docker-образ из репо B
+      - name: Build Docker image
+        run: docker build -t function-tests tests-repo
+
+      # Запускаем контейнер и монтируем код из репо А внутрь
       - name: Run tests in Docker
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
