@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import re
 import traceback
 
 import yaml
@@ -8,6 +9,20 @@ import yaml
 from src.function_register import FunctionRegistry
 from src.openrouter_client import OpenRouterClient
 from src.reporter import CIReporter, LocalReporter
+
+
+def substitute_placeholders(text: str) -> str:
+    """
+    Заменяет маркеры вида <#secret.KEY> на значения из переменных окружения.
+    Если переменной нет, оставляет маркер как есть.
+    """
+    pattern = r"<#secret\.([A-Z0-9_]+)>"
+
+    def replacer(match):
+        key = match.group(1)
+        return os.getenv(key, match.group(0))
+
+    return re.sub(pattern, replacer, text)
 
 
 def run_tests_for_function(args, test_cases):
@@ -27,17 +42,20 @@ def run_tests_for_function(args, test_cases):
     client = OpenRouterClient()
 
     for i, test_case in enumerate(test_cases, 1):
-        print(f"\n🔍 Тест {i}/{len(test_cases)}: '{test_case['query']}'")
+        # Подставляем секреты в запрос
+        query = substitute_placeholders(test_case["query"])
+
+        print(f"\n🔍 Тест {i}/{len(test_cases)}: '{query}'")
 
         test_result = {
             "test_index": i,
-            "query": test_case["query"],
+            "query": query,
             "description": test_case.get("description", ""),
         }
 
         try:
             response = client.call_with_functions(
-                user_query=test_case["query"], function_schemas=schemas
+                user_query=query, function_schemas=schemas
             )
             test_result["response"] = response
 
