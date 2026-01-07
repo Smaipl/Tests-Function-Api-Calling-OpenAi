@@ -7,7 +7,9 @@ on:
         description: "Имя функции для проверки (без расширения)"
         required: true
         type: string
-    secrets: inherit
+    secrets:
+      OPENROUTER_API_KEY:
+        required: true
 
 jobs:
   run-tests:
@@ -37,10 +39,11 @@ jobs:
 
       # Запускаем контейнер и сохраняем stdout в файл
       - name: Run tests in Docker
-        env: ${{ secrets }}
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           docker run --rm \
-            $(printf '%s\n' $(env | grep -E 'OPENROUTER_API_KEY|NOTION_TOKEN|NOTION_DATABASE_ID' | sed 's/^/-e /')) \
+            -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" \
             -v "$GITHUB_WORKSPACE:/function_code" \
             function-tests \
             /app/.venv/bin/python test_runner.py \
