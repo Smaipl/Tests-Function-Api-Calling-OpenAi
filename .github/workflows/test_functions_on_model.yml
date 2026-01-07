@@ -58,6 +58,13 @@ jobs:
             : > "$ENV_FILE"
           fi
 
+          echo "=== DEBUG: OPENROUTER_API_KEY ===" 
+          echo "$OPENROUTER_API_KEY" 
+          echo "=== DEBUG: ADDITIONAL_SECRETS (raw JSON) ===" 
+          echo "$ADDITIONAL_SECRETS" 
+          echo "=== DEBUG: ADDITIONAL_SECRETS parsed to env-file ===" 
+          cat "$ENV_FILE"
+
           docker run --rm \
             -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" \
             --env-file "$ENV_FILE" \
