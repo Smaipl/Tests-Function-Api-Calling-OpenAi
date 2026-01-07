@@ -1,10 +1,39 @@
 import json
+import os
+import re
 from typing import Any
 
 from openai import OpenAI
 from openai.types.chat import ChatCompletionToolParam
 
 from configurates.config import OPENROUTER_API_KEY
+
+
+def substitute_placeholders(text: str) -> str:
+    """
+    Заменяет маркеры вида <#secret.KEY> на значения из окружения.
+    """
+    pattern = r"<#secret\.([A-Z0-9_]+)>"
+
+    def replacer(match):
+        key = match.group(1)
+        return os.getenv(key, match.group(0))
+
+    return re.sub(pattern, replacer, text)
+
+
+def substitute_in_args(args: Any) -> Any:
+    """
+    Рекурсивно заменяет маркеры в аргументах функции.
+    """
+    if isinstance(args, str):
+        return substitute_placeholders(args)
+    elif isinstance(args, dict):
+        return {k: substitute_in_args(v) for k, v in args.items()}
+    elif isinstance(args, list):
+        return [substitute_in_args(v) for v in args]
+    else:
+        return args
 
 
 class OpenRouterClient:
@@ -25,7 +54,9 @@ class OpenRouterClient:
         temperature: float = 0.1,
         max_tokens: int = 500,
     ) -> dict[str, Any]:
-        # формируем список инструментов напрямую из dict схем
+        # 🔥 заменяем маркеры в запросе
+        user_query = substitute_placeholders(user_query)
+
         tools: list[ChatCompletionToolParam] = [
             ChatCompletionToolParam(type="function", function=f) for f in function_schemas
         ]
@@ -54,7 +85,6 @@ class OpenRouterClient:
             },
         }
 
-        # безопасная итерация по tool_calls
         tool_calls = message.tool_calls or []
         parsed_calls = []
         for tool_call in tool_calls:
@@ -63,6 +93,10 @@ class OpenRouterClient:
                     args = json.loads(tool_call.function.arguments)
                 except json.JSONDecodeError:
                     args = tool_call.function.arguments
+
+                # 🔥 заменяем маркеры в аргументах
+                args = substitute_in_args(args)
+
                 parsed_calls.append(
                     {
                         "id": tool_call.id,
