@@ -14,11 +14,11 @@ class Validator:
                 f"Функция {func.__name__} должна принимать ровно 1 аргумент, получено {len(params)}"
             )
 
-        if params[0].annotation is inspect._empty or params[0].annotation is not dict:
-            raise ValueError(f"Функция {func.__name__} должна принимать аргумент типа dict")
+        # if params[0].annotation is inspect._empty or params[0].annotation is not dict:
+        #     raise ValueError(f"Функция {func.__name__} должна принимать аргумент типа dict")
         
-        if sig.return_annotation is inspect._empty or sig.return_annotation is not str:
-            raise ValueError(f"Функция {func.__name__} должна возвращать значение типа str")
+        # if sig.return_annotation is inspect._empty or sig.return_annotation is not str:
+        #     raise ValueError(f"Функция {func.__name__} должна возвращать значение типа str")
 
     @staticmethod
     def validate_schema(schema: dict[str, Any], func_name: str) -> None:
