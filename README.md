@@ -62,7 +62,11 @@ python test_runner.py --function functions/weather.py --schema functions/weather
 
 - query: "Какая погода в Гродно?"
   description: "Проверка функции weather для города без данных"
+
+- query: Поставь дату 2025-12-31 в "Окончание" где "Название" = "Кредит Весна" в базе данных you_uri_database используя токен <#secret.NOTION_TOKEN>
 ```
+****Все ключи записываюся в виде <#secret.YOUR_KEY>***
+
 
 ### Пример формирования function.py
 ```python
