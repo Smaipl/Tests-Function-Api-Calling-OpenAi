@@ -112,14 +112,22 @@ Workflow для репозитория А
 ```yml
 name: Run Function Tests
 
+
 on:
-  workflow_dispatch:   # запуск вручную из GitHub
+  workflow_dispatch:
 
 jobs:
   call-tests:
     uses: Smaipl/Tests-Function-Api-Calling-OpenAi/.github/workflows/test_functions_on_model.yml@main
     with:
-      function_name: "имя_функции_без_расширения"
+      function_name: "name function"
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      ADDITIONAL_SECRETS: ${{ secrets.ADDITIONAL_SECRETS }} # секрет записывается в формате json
+      # 
+      #   {
+      #      "NAME_SECRET": "VALUE_SECRET",
+      #      "NAME_SECRET_TWO": "VALUE_SECRET_TWO"
+      #   }
+      # 
 ```
