@@ -5,8 +5,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from src.function_validators import Validator
-
 
 @dataclass
 class FunctionInfo:
@@ -32,7 +30,7 @@ class FunctionRegistry:
         return FunctionRegistry._functions[name].schema
 
     @staticmethod
-    def register_from_file(py_file: str, schema_file: str):
+    def register(py_file: str, schema_file: str) -> FunctionInfo:
         """Импортирует модуль из файла и регистрирует функцию по схеме"""
         module_name = os.path.splitext(os.path.basename(py_file))[0]
 
@@ -48,20 +46,21 @@ class FunctionRegistry:
             schema = json.load(f)
 
         func_name = schema["name"]
+
         if not hasattr(module, func_name):
             raise ValueError(f"Функция '{func_name}' не найдена в модуле {py_file}")
 
         func = getattr(module, func_name)
 
-        # Валидация
-        Validator.validate_signature(func)
-        Validator.validate_schema(schema, func_name)
-
-        # Регистрируем строго по имени из схемы
-        FunctionRegistry._functions[func_name] = FunctionInfo(
+        result = FunctionInfo(
             name=func_name,
             func=func,
             schema=schema,
             module=module_name,
         )
+
+        # Регистрируем строго по имени из схемы
+        FunctionRegistry._functions[func_name] = result
         print(f"📥 Зарегистрирована функция: {func_name}")
+
+        return result

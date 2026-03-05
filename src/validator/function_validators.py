@@ -16,7 +16,7 @@ class Validator:
 
         # if params[0].annotation is inspect._empty or params[0].annotation is not dict:
         #     raise ValueError(f"Функция {func.__name__} должна принимать аргумент типа dict")
-        
+
         # if sig.return_annotation is inspect._empty or sig.return_annotation is not str:
         #     raise ValueError(f"Функция {func.__name__} должна возвращать значение типа str")
 
@@ -48,9 +48,13 @@ class Validator:
             if "type" not in prop_def:
                 raise ValueError(f"Свойство '{prop_name}' должно содержать поле 'type'")
             if "description" not in prop_def:
-                raise ValueError(f"Свойство '{prop_name}' должно содержать поле 'description'")
+                raise ValueError(
+                    f"Свойство '{prop_name}' должно содержать поле 'description'"
+                )
             if "enum" in prop_def and not isinstance(prop_def["enum"], list):
-                raise ValueError(f"Поле 'enum' в свойстве '{prop_name}' должно быть списком")
+                raise ValueError(
+                    f"Поле 'enum' в свойстве '{prop_name}' должно быть списком"
+                )
             if prop_def in not_support:
                 raise ValueError(
                     f"Поле '{prop_def}' в свойстве '{prop_name}' не поддерживается!"

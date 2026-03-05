@@ -1,44 +1,140 @@
-# --- Python ---
+# -----------------------------------------------------------
+# 1. PYTHON
+# -----------------------------------------------------------
+# Байт-код и кэш
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
 *.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
+.installed.cfg
 *.egg
 
-# --- Virtual environment ---
-.venv/
-env/
+# Виртуальные окружения (venv, venv3, .venv)
 venv/
+ENV/
+env/
+.venv/
 
-# --- PyCharm / JetBrains IDE ---
-.idea/
-*.iml
-*.ipr
-*.iws
-
-
-
-# --- Environment / Config ---
-.env
-
-# --- Snapshots & Test artifacts ---
-snapshots/
-test_snapshots/
-test_results/
-
-# --- Logs & Temp ---
-*.log
-*.tmp
-*.bak
-*.DS_Store
-Thumbs.db
-
-# --- Coverage / Reports ---
+# Инструменты разработки
+.pytest_cache/
 .coverage
 htmlcov/
-.cache/
-pytest_cache/
+.tox/
+.nox/
+.hypothesis/
+*.cover
+*.py,cover
 
-archive/
+# Типизация и линтеры
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# -----------------------------------------------------------
+# 2. ПРОЕКТНЫЕ СЕКРЕТЫ И КОНФИГИ (САМОЕ ВАЖНОЕ!)
+# -----------------------------------------------------------
+# Файлы с паролями, ключами и настройками БД
+.env
+.env.local
+.env.*.local
+.env_backend
+.env_prod
+*.key
+*.pem
+
+# Конфиги IDE (если не нужны в репо)
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# -----------------------------------------------------------
+# 3. БАЗЫ ДАННЫХ И ХРАНЕНИЕ
+# -----------------------------------------------------------
+# SQLite базы данных (чтобы не коммитить тестовые данные)
+*.db
+*.sqlite
+*.sqlite3
+
+# Файлы миграций Alembic (опционально: можно коммитить, но лучше игнорировать локальные)
+# alembic/versions/*.py  <-- РАСКОММЕНТИРУЙ, если хочешь игнорировать авто-миграции
+# Но обычно сами файлы миграций НУЖНО коммитить! Игнорируем только __pycache__ внутри
+alembic/__pycache__/
+alembic/versions/__pycache__/
+
+# -----------------------------------------------------------
+# 4. DOCKER
+# -----------------------------------------------------------
+# Игнорируем собранные образы и временные файлы
+.docker/
+docker-compose.override.yml
+*.tar
+
+# Папки томов (volumes), если они создаются локально
+postgres_data/
+redis_data/
+bot_database.db
+
+# -----------------------------------------------------------
+# 5. LOGS И ВРЕМЕННЫЕ ФАЙЛЫ
+# -----------------------------------------------------------
+*.log
+logs/
+tmp/
+temp/
+.DS_Store           # macOS
+Thumbs.db           # Windows
+desktop.ini         # Windows
+
+# -----------------------------------------------------------
+# 6. FRONTEND / BUILD (если вдруг будет)
+# -----------------------------------------------------------
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+
+# -----------------------------------------------------------
+# 7. СПЕЦИФИЧНО ДЛЯ ТВОЕГО ПРОЕКТА
+# -----------------------------------------------------------
+# Если используешь Celery beat расписание
+celerybeat-schedule
+celerybeat.pid
+
+# Временные файлы тестов
+test_results/
+# Docker volumes
+backend_data/
+redis_data/
+
+# Собранные файлы фронтенда (клиент соберет сам)
+telegram-admin-hub/dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+telegram-admin-hub/node_modules/
+
+# Env
+.env
+backend/mock/

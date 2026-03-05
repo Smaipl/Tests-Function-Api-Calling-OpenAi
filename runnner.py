@@ -5,10 +5,10 @@ import re
 import traceback
 
 import yaml
-
 from src.function_register import FunctionRegistry
-from src.openrouter_client import OpenRouterClient
 from src.reporter import CIReporter, LocalReporter
+
+from src.openrouter_client import OpenRouterClient
 
 
 def substitute_placeholders(text: str) -> str:
@@ -27,19 +27,12 @@ def substitute_placeholders(text: str) -> str:
 
 def run_tests_for_function(args, test_cases):
     results = {"details": []}
+    client = OpenRouterClient()
 
     # Регистрируем функцию
-    FunctionRegistry.register_from_file(args.function, args.schema)
+    func_reg: FunctionInfo = FunctionRegistry.register(args.function, args.schema)
 
-    client = OpenRouterClient()
-
-    # Берём имя функции из схемы
-    with open(args.schema, encoding="utf-8") as f:
-        schema_name = json.load(f)["name"]
-
-    schemas = [FunctionRegistry.get_schema(schema_name)]
-
-    client = OpenRouterClient()
+    schemas = func_reg.schema
 
     for i, test_case in enumerate(test_cases, 1):
         # Подставляем секреты в запрос
@@ -71,7 +64,9 @@ def run_tests_for_function(args, test_cases):
                     func_args = tc["function"]["arguments"]
                     print(f"➡️ Вызов {idx}: {func_name}({func_args})")
                     try:
-                        execution_result = FunctionRegistry.execute(func_name, func_args)
+                        execution_result = FunctionRegistry.execute(
+                            func_name, func_args
+                        )
                         execution_chain.append(
                             {"function": func_name, "result": execution_result}
                         )
@@ -88,7 +83,9 @@ def run_tests_for_function(args, test_cases):
                 print(f"➡️ Вызов: {func_name}({func_args})")
                 try:
                     execution_result = FunctionRegistry.execute(func_name, func_args)
-                    execution_chain.append({"function": func_name, "result": execution_result})
+                    execution_chain.append(
+                        {"function": func_name, "result": execution_result}
+                    )
                     print(f"⚙️ Результат {func_name}: {execution_result}")
                 except Exception as e:
                     execution_chain.append(
@@ -114,18 +111,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--function", required=True, help="Путь к файлу функции (.py)")
     parser.add_argument("--schema", required=True, help="Путь к файлу схемы (.json)")
-    parser.add_argument("--tests", required=True, help="Путь к suite (JSON или YAML)")
+    parser.add_argument("--suite", required=True, help="Путь к suite (JSON или YAML)")
     args = parser.parse_args()
 
-    if not os.path.exists(args.tests):
-        raise FileNotFoundError(f"Файл тестов '{args.tests}' не найден")
+    if not os.path.exists(args.suite):
+        raise FileNotFoundError(f"Файл тестов '{args.suite}' не найден")
 
     # Определяем формат по расширению
-    if args.tests.endswith(".yaml") or args.tests.endswith(".yml"):
-        with open(args.tests, encoding="utf-8") as f:
+    if args.suite.endswith(".yaml") or args.suite.endswith(".yml"):
+        with open(args.suite, encoding="utf-8") as f:
             test_cases = yaml.safe_load(f)
     else:
-        with open(args.tests, encoding="utf-8") as f:
+        with open(args.suite, encoding="utf-8") as f:
             test_cases = json.load(f)
 
     results = run_tests_for_function(args, test_cases)
