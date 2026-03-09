@@ -4,6 +4,8 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
 
 from src.exceptions.custom_exceptions import (
+    EmptyRequiredFields,
+    TypeMismatchJsonToPython,
     UnregisterField,
 )
 
@@ -63,43 +65,15 @@ class Parameters(BaseModel):
     parameter_type: str = Field(default="", alias="type")
     properties: dict[str, Property]
     required: list[str] = []
-    _required_fields = PrivateAttr(default=["property_type", "description", "default"])
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
-
-    # @model_validator(mode="after")
-    # def validate_schema(self):
-    #     errors = []
-
-    #     for key, prop in self.properties.items():
-    #         missing = [f for f in self._required_fields if getattr(prop, f) is None]
-    #         if missing:
-    #             errors.append(
-    #                 EmptyRequiredFields(
-    #                     message=f"В ключе '{key}' пропущены обязательные поля",
-    #                     fields=missing,
-    #                 )
-    #             )
-
-    #         typemismatch = TYPE_MAPPING.get(prop.property_type, "unknown")
-    #         if typemismatch == "unknown":
-    #             errors.append(
-    #                 TypeMismatchJsonToPython(
-    #                     f"В ключе '{key}' есть несоответствие типов",
-    #                     (prop.property_type,),
-    #                 )
-    #             )
-
-    #     if errors:
-    #         raise ExceptionGroup("Ошибки валидации и типизации", errors)
-
-    #     return self
 
 
 class Schema(BaseModel):
     name: str
     description: str
     parameters: Parameters
+    _required_fields = PrivateAttr(default=["property_type", "description", "default"])
 
     model_config = ConfigDict(extra="allow")
 
@@ -107,7 +81,26 @@ class Schema(BaseModel):
     def validate_all_extra_fields(self):
         errors = get_extra_field_errors(self)
 
+        for key, prop in self.parameters.properties.items():
+            missing = [f for f in self._required_fields if getattr(prop, f) is None]
+            if missing:
+                errors.append(
+                    EmptyRequiredFields(
+                        message=f"В ключе '{key}' пропущены обязательные поля",
+                        fields=missing,
+                    )
+                )
+
+            typemismatch = TYPE_MAPPING.get(prop.property_type, "unknown")
+            if typemismatch == "unknown":
+                errors.append(
+                    TypeMismatchJsonToPython(
+                        f"В ключе '{key}' есть несоответствие типов",
+                        (prop.property_type,),
+                    )
+                )
+
         if errors:
-            raise ExceptionGroup("Ошибки валидации: обнаружены лишние ключи", errors)
+            raise ExceptionGroup("Ошибки валидации и типизации:", errors)
 
         return self
