@@ -1,4 +1,3 @@
-import sys
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
@@ -9,17 +8,14 @@ from src.exceptions.custom_exceptions import (
     UnregisterField,
 )
 
-sys.tracebacklimit = 0
-
-
-TYPE_MAPPING: dict[str, dict[str, Any]] = {
-    "object": {"dict": {}},
-    "array": {"list": [], "tuple": ()},
-    "string": {"str": ""},
-    "number": {"float": 0.0, "int": 0},
-    "integer": {"int": 0},
-    "boolean": {"bool": False},
-    "null": {"None": None},
+TYPE_MAPPING = {
+    "object": dict,
+    "array": list,
+    "string": str,
+    "number": float | int,
+    "integer": int,
+    "boolean": bool,
+    "null": type(None),
 }
 
 
@@ -53,10 +49,10 @@ def get_extra_field_errors(obj: BaseModel):
 
 
 class Property(BaseModel):
-    property_type: str | None = Field(default=None, alias="type")
-    description: str | None = None
-    enum: list[Any] | None = None
-    default: Any | None = None
+    property_type: str = Field(default="", alias="type")
+    description: str = ""
+    enum: list[Any] = Field(default_factory=list)
+    default: Any = None
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
@@ -64,7 +60,8 @@ class Property(BaseModel):
 class Parameters(BaseModel):
     parameter_type: str = Field(default="", alias="type")
     properties: dict[str, Property]
-    required: list[str] = []
+    required: list[str] = Field(default_factory=list)
+    _required_fields = PrivateAttr(default=["property_type", "description", "default"])
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
@@ -73,7 +70,6 @@ class Schema(BaseModel):
     name: str
     description: str
     parameters: Parameters
-    _required_fields = PrivateAttr(default=["property_type", "description", "default"])
 
     model_config = ConfigDict(extra="allow")
 
@@ -82,7 +78,9 @@ class Schema(BaseModel):
         errors = get_extra_field_errors(self)
 
         for key, prop in self.parameters.properties.items():
-            missing = [f for f in self._required_fields if getattr(prop, f) is None]
+            missing = [
+                f for f in self.parameters._required_fields if getattr(prop, f) is None
+            ]
             if missing:
                 errors.append(
                     EmptyRequiredFields(
@@ -96,7 +94,7 @@ class Schema(BaseModel):
                 errors.append(
                     TypeMismatchJsonToPython(
                         f"В ключе '{key}' есть несоответствие типов",
-                        (prop.property_type,),
+                        prop.property_type,
                     )
                 )
 
