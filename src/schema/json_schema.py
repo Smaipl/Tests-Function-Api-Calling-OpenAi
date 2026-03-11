@@ -7,16 +7,7 @@ from src.exceptions.custom_exceptions import (
     TypeMismatchJsonToPython,
     UnregisterField,
 )
-
-TYPE_MAPPING = {
-    "object": dict,
-    "array": list,
-    "string": str,
-    "number": float | int,
-    "integer": int,
-    "boolean": bool,
-    "null": type(None),
-}
+from src.utils.interfaces import DEFAULT_REQUIRED_FIELDS, TYPE_MAPPING
 
 
 def get_extra_field_errors(obj: BaseModel):
@@ -49,8 +40,8 @@ def get_extra_field_errors(obj: BaseModel):
 
 
 class Property(BaseModel):
-    property_type: str = Field(default="", alias="type")
-    description: str = ""
+    property_type: str | None = Field(default=None, alias="type")
+    description: str | None = None
     enum: list[Any] = Field(default_factory=list)
     default: Any = None
 
@@ -58,10 +49,10 @@ class Property(BaseModel):
 
 
 class Parameters(BaseModel):
-    parameter_type: str = Field(default="", alias="type")
+    parameter_type: str = Field(alias="type")
     properties: dict[str, Property]
-    required: list[str] = Field(default_factory=list)
-    _required_fields = PrivateAttr(default=["property_type", "description", "default"])
+    required: list[str]
+    _required_fields = PrivateAttr(default=DEFAULT_REQUIRED_FIELDS)
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
@@ -79,7 +70,9 @@ class Schema(BaseModel):
 
         for key, prop in self.parameters.properties.items():
             missing = [
-                f for f in self.parameters._required_fields if getattr(prop, f) is None
+                f
+                for f in self.parameters._required_fields
+                if not hasattr(prop, f) or getattr(prop, f) is None
             ]
             if missing:
                 errors.append(
@@ -88,15 +81,15 @@ class Schema(BaseModel):
                         fields=missing,
                     )
                 )
-
-            typemismatch = TYPE_MAPPING.get(prop.property_type, "unknown")
-            if typemismatch == "unknown":
-                errors.append(
-                    TypeMismatchJsonToPython(
-                        f"В ключе '{key}' есть несоответствие типов",
-                        prop.property_type,
+            if prop.property_type:
+                typemismatch = TYPE_MAPPING.get(prop.property_type, "unknown")
+                if typemismatch == "unknown":
+                    errors.append(
+                        TypeMismatchJsonToPython(
+                            f"В ключе '{key}' есть несоответствие типов",
+                            prop.property_type,
+                        )
                     )
-                )
 
         if errors:
             raise ExceptionGroup("Ошибки валидации и типизации:", errors)
