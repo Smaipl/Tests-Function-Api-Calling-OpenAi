@@ -5,7 +5,6 @@ from typing import Any
 class BaseFunctionException(Exception):
     def __init__(self, message: str = "", fields: Any = None):
         self.message = message
-        # Превращаем сложные объекты (типа Parameter) в строки сразу
         self.fields = (
             fields if isinstance(fields, (list, dict, str, int)) else str(fields)
         )
@@ -13,10 +12,8 @@ class BaseFunctionException(Exception):
 
     def __str__(self):
         try:
-            # Пытаемся сделать красивый JSON
             details = json.dumps(self.fields, indent=4, ensure_ascii=False)
         except (TypeError, ValueError):
-            # Если не вышло (например, там сложный объект), просто берем repr
             details = repr(self.fields)
 
         return f"\n❌ {self.message}\nДетали: {details}"
