@@ -38,7 +38,7 @@ jobs:
         run: uv run pytest
 
       - name: Generate Allure Report
-        run: npx allure generate allure-results --config allurerc.yaml
+        run: npx allure generate --config allurerc.yaml
       
       - name: Build Awesome Allure Report
         run: npx allure awesome allure-result/ --config allurerc.yaml
