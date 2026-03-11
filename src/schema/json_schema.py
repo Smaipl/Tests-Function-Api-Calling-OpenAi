@@ -44,12 +44,13 @@ class Property(BaseModel):
     description: str | None = None
     enum: list[Any] = Field(default_factory=list)
     default: Any = None
+    # default: Any = Field(...)
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
 
 class Parameters(BaseModel):
-    parameter_type: str | None = Field(..., min_length=1, alias="type")
+    parameter_type: str = Field(alias="type")
     properties: dict[str, Property]
     required: list[str] = Field(default_factory=list)
     _required_fields = PrivateAttr(default=DEFAULT_REQUIRED_FIELDS)
@@ -58,8 +59,8 @@ class Parameters(BaseModel):
 
 
 class Schema(BaseModel):
-    name: str | None = Field(..., min_length=1)
-    description: str | None = Field(..., min_length=1)
+    name: str
+    description: str
     parameters: Parameters
 
     model_config = ConfigDict(extra="allow")
@@ -72,8 +73,9 @@ class Schema(BaseModel):
             missing = [
                 f
                 for f in self.parameters._required_fields
-                if not hasattr(prop, f) or getattr(prop, f) is None
+                if f not in prop.model_fields_set
             ]
+
             if missing:
                 errors.append(
                     EmptyRequiredFields(
@@ -81,6 +83,7 @@ class Schema(BaseModel):
                         fields=missing,
                     )
                 )
+
             if prop.property_type:
                 typemismatch = TYPE_MAPPING.get(prop.property_type, "unknown")
                 if typemismatch == "unknown":
