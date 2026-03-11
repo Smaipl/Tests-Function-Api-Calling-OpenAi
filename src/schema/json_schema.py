@@ -44,7 +44,6 @@ class Property(BaseModel):
     description: str | None = None
     enum: list[Any] = Field(default_factory=list)
     default: Any = None
-    # default: Any = Field(...)
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
