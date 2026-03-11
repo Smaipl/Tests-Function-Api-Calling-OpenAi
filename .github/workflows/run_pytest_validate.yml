@@ -28,7 +28,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Allure 3
@@ -41,12 +41,12 @@ jobs:
         run: npx allure generate --config allurerc.yaml
       
       - name: Build Awesome Allure Report
-        run: npx allure awesome allure-result/ --config allurerc.yaml
+        run: npx allure awesome allure-results/ --config allurerc.yaml
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: allure-result/ 
+          path: allure-results/ 
 
       - name: Deploy to GitHub Pages
         id: deployment
