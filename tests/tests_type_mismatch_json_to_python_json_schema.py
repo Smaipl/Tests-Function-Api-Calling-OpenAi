@@ -78,7 +78,6 @@ def test_type_sync_success(file_name, schema_name, get_json_schema):
     json_data = get_json_schema(file_name, schema_name)
 
     with allure.step("Валидация корректной схемы"):
-        # Если здесь вылетит ошибка — тест упадет (нам это и нужно)
         schema_obj = Schema.model_validate(json_data)
 
     with allure.step("Проверка, что объект Schema создан"):
