@@ -1,6 +1,9 @@
 # 🧪 Модуль тестирования [v 0.4.0]
 
-![Python](https://img.shields.io) ![Node.js](https://img.shields.io) ![Allure 3](https://img.shields.io)
+![Python 3.12](https://img.shields.io)
+![Node.js 24](https://img.shields.io)
+![Allure 3](https://img.shields.io)
+
 
 Комплексная проверка взаимодействия JSON-схем с Python-функциями и вызова моделей через агрегаторы.
 
