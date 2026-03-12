@@ -1,0 +1,161 @@
+[
+  {
+    "name": "test_missing_fields_default",
+    "description": "Пропуск поля 'default' в свойстве 'prompt'",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Текст для генерации"
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_fields_description",
+    "description": "Пропуск поля 'description' в свойстве 'prompt'",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "default": "Текст для генерации"
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_fields_type",
+    "description": "Пропуск поля 'type' в свойстве 'prompt'",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "description": "Текст для генерации",
+          "default": ""
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_two_fields",
+    "description": "Пропуск сразу двух полей: 'type' и 'default'",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "description": "Текст для генерации"
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_all_fields",
+    "description": "В объекте внутри properties вообще нет обязательных полей",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "some_field": {
+          "enum": []
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_description_level_1_field",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Текст для генерации",
+          "default": ""
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_parameters_fields",
+    "description": "Пропуск поля 'type' в свойстве 'prompt'"
+  },
+  {
+    "name": "test_missing_properties_fields",
+    "description": "Пропуск поля 'type' в свойстве 'prompt'",
+    "parameters": {
+      "type": "object",
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_missing_type_level_2_fields",
+    "description": "Пропуск поля 'type' в свойстве 'prompt'",
+    "parameters": {
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Текст для генерации",
+          "default": ""
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_all_required_fields",
+    "description": "Пропуск поля 'type' в свойстве 'prompt'",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Текст для генерации",
+          "default": ""
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  },
+  {
+    "name": "test_all_fields",
+    "description": "Пропуск поля 'type' в свойстве 'prompt'",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Текст для генерации",
+          "default": "",
+          "enum": []
+        }
+      },
+      "required": [
+        "api_key"
+      ]
+    }
+  }
+]

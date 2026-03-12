@@ -1,44 +1,101 @@
-# --- Python ---
+# -----------------------------------------------------------
+# 1. PYTHON (Кэш, виртуальные окружения и сборка)
+# -----------------------------------------------------------
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
 *.so
-*.egg-info/
 *.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+sdist/
+lib/
+lib64/
+parts/
+var/
+wheels/
+.installed.cfg
+.Python
 
-# --- Virtual environment ---
+# Виртуальные окружения
 .venv/
-env/
 venv/
+env/
+ENV/
 
-# --- PyCharm / JetBrains IDE ---
-.idea/
-*.iml
-*.ipr
-*.iws
-
-
-
-# --- Environment / Config ---
-.env
-
-# --- Snapshots & Test artifacts ---
-snapshots/
-test_snapshots/
-test_results/
-
-# --- Logs & Temp ---
-*.log
-*.tmp
-*.bak
-*.DS_Store
-Thumbs.db
-
-# --- Coverage / Reports ---
+# -----------------------------------------------------------
+# 2. ТЕСТИРОВАНИЕ И АНАЛИЗ (Pytest, Coverage, Allure)
+# -----------------------------------------------------------
+.pytest_cache/
 .coverage
 htmlcov/
-.cache/
-pytest_cache/
+.analytics/
+*.cover
+*.py,cover
+.tox/
+.nox/
+.hypothesis/
 
-archive/
+# Allure отчеты и результаты
+allure-results/
+allure-report/
+
+# Типизация и линтеры
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# -----------------------------------------------------------
+# 3. NODE.JS / FRONTEND (Allure CLI)
+# -----------------------------------------------------------
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# -----------------------------------------------------------
+# 4. СЕКРЕТЫ И КОНФИГУРАЦИЯ
+# -----------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# IDE (PyCharm, VSCode)
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# -----------------------------------------------------------
+# 5. БАЗЫ ДАННЫХ И ЛОГИ
+# -----------------------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+tmp/
+temp/
+
+# Данные Docker-томов
+postgres_data/
+redis_data/
+
+# -----------------------------------------------------------
+# 6. СИСТЕМНЫЕ ФАЙЛЫ
+# -----------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -----------------------------------------------------------
+# 7. СПЕЦИФИКА ПРОЕКТА
+# -----------------------------------------------------------
+
+celerybeat-schedule
+celerybeat.pid

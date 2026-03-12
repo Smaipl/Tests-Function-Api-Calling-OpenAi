@@ -1,0 +1,238 @@
+[
+    {
+        "name": "test_extra_root_field",
+        "description": "Лишний ключ 'version' в корне Schema",
+        "version": "1.0.0",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": "",
+                    "enum": []
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    },
+    {
+        "name": "test_extra_parameters_field",
+        "description": "Лишний ключ 'strict_mode' внутри Parameters",
+        "parameters": {
+            "type": "object",
+            "strict_mode": true,
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": "",
+                    "enum": []
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    },
+    {
+        "name": "test_extra_property_field",
+        "description": "Лишний ключ 'metadata' внутри Property 'prompt'",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": "",
+                    "enum": [],
+                    "metadata": {
+                        "internal_id": 123
+                    }
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    },
+    {
+        "name": "test_extra_root_and_parameters",
+        "description": "Лишние ключи в корне и в объекте параметров",
+        "root_extra": "first_bad_key",
+        "parameters": {
+            "type": "object",
+            "params_extra": "second_bad_key",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Ок"
+                }
+            }
+        }
+    },
+    {
+        "name": "test_extra_root_and_property",
+        "description": "Лишние ключи в корне и внутри свойства prompt",
+        "root_extra": "top_level_junk",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Ок",
+                    "prop_extra": "deep_level_junk"
+                }
+            }
+        }
+    },
+    {
+        "name": "test_extra_parameters_and_property",
+        "description": "Лишние ключи в Parameters и внутри свойства prompt",
+        "parameters": {
+            "type": "object",
+            "params_extra": "level_2_extra",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Ок",
+                    "prop_extra": "level_3_extra"
+                }
+            }
+        }
+    },
+    {
+        "name": "test_three_extra_at_root",
+        "description": "3 лишних ключа только в корне Schema",
+        "extra_1": "val1",
+        "extra_2": "val2",
+        "extra_3": "val3",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Ок"
+                }
+            }
+        }
+    },
+    {
+        "name": "test_three_extra_in_parameters",
+        "description": "3 лишних ключа внутри объекта parameters",
+        "parameters": {
+            "type": "object",
+            "p_extra_A": 1,
+            "p_extra_B": 2,
+            "p_extra_C": 3,
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Ок"
+                }
+            }
+        }
+    },
+    {
+        "name": "test_three_extra_in_property",
+        "description": "3 лишних ключа внутри описания свойства prompt",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Ок",
+                    "prop_extra_X": true,
+                    "prop_extra_Y": false,
+                    "prop_extra_Z": null
+                }
+            }
+        }
+    },
+    {
+        "name": "test_triple_extra_on_all_levels",
+        "description": "По 3 лишних ключа в корне, в параметрах и в свойствах (итого 9)",
+        "root_extra_1": "bad",
+        "root_extra_2": "very_bad",
+        "root_extra_3": "extremely_bad",
+        "parameters": {
+            "type": "object",
+            "params_extra_A": 100,
+            "params_extra_B": 200,
+            "params_extra_C": 300,
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": "",
+                    "prop_extra_X": true,
+                    "prop_extra_Y": false,
+                    "prop_extra_Z": null
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    },
+    {
+        "name": "test_extra_fields_on_all_levels",
+        "description": "Схема с лишними ключами в корне, в параметрах и в свойствах",
+        "root_extra_key": "I should not be here",
+        "parameters": {
+            "type": "object",
+            "parameters_extra_key": 12345,
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": "",
+                    "enum": [],
+                    "property_extra_key": {
+                        "meta": "data"
+                    }
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    },
+    {
+        "name": "test_all_required_fields",
+        "description": "Пропуск поля 'type' в свойстве 'prompt'",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": ""
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    },
+    {
+        "name": "test_all_fields",
+        "description": "Пропуск поля 'type' в свойстве 'prompt'",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст для генерации",
+                    "default": "",
+                    "enum": []
+                }
+            },
+            "required": [
+                "api_key"
+            ]
+        }
+    }
+]

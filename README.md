@@ -1,137 +1,60 @@
-# Function API Calling
+# Модуль тестирования [v 0.4.0]
 
-CLI‑фреймворк для тестирования функций и схем через **OpenRouter API**.  
-Позволяет запускать тестовые сценарии из YAML, проверять корректность вызовов и формировать отчёты для локальной разработки и CI.
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24%2B-green?logo=nodedotjs&logoColor=white)
+![Allure 3](https://img.shields.io/badge/Allure-3-orange?logo=allure&logoColor=white)
 
----
+Комплексная проверка взаимодействия JSON-схем с Python-функциями и вызова моделей через агрегаторы.
 
-## 📑 Возможности
-- Регистрация функций из `.py` файлов и схем из `.json`.
-- Проверка сигнатуры и схемы (`Validator`).
-- Запуск тестов из YAML suite (`--tests`).
-- Поддержка цепочек вызовов (`tool_calls` и `function_call`).
-- Автоматическая генерация отчётов:
-  - локально (читаемый вывод в консоль),
-  - в CI (JSON‑отчёт для GitHub Actions).
+📊 **[Посмотреть интерактивный отчет Allure](https://logg1n.github.io/Tests-Function-Api-Calling-OpenAi/)**
 
 ---
 
-## 🛠️ Стек
-- Python 3.12+
-- OpenRouter API / OpenAI SDK
-- YAML для описания тестов
-- rich — форматированный вывод
-- black, ruff — автоформат и линтинг
+##  1. Модуль: Валидация и Синхронизация
+
+Автоматическая проверка соответствия манифеста функции (JSON Schema) её реализации в коде.
+
+### Этапы проверки (Pydantic & @model_validator)
+
+* **Валидация JSON-схемы:**
+  * [x] Корректность ключей (секция `properties`).
+  * [x] Обязательные служебные поля (`default`, `debug` и др.).
+  * [x] Блокировка неподдерживаемых или лишних ключей.
+  * [x] Генерация карты типов: `имя_аргумента` ↔ `тип` ↔ `default_value`.
+
+* **Синхронизация с кодом функции:**
+  * [x] Сопоставление вызовов `arguments.get("key", default)` с описанием в схеме.
+  * [x] Проверка идентичности имён схемы и Python-функции.
+  * [x] Контроль количества и наименований аргументов в блоке `arguments`.
 
 ---
 
-## ▶️ Запуск тестов (Заглушка)
+##  2. Модуль: Агрегатор моделей (OpenRouter / KIA)
+>
+> В разработке
 
-```bash
-python test_runner.py --function functions/weather.py --schema functions/weather.json --tests suites/weather.yaml
-📥 Зарегистрирована функция: weather
+Тестирование логики вызова LLM и корректности формирования Tool Calls.
 
-🔍 Тест 1/3: 'Какая погода в Минске?'
-➡️ Вызов 1: weather({'city': 'Minsk'})
-⚙️ Результат weather: {"temperature": 0, "condition": "unknown"}
+* **Конфигурация:** Настройки моделей вынесены в `.yaml`, чувствительные данные — в `.env`.
+* **Логика:** Использование **Pydantic** для типизации ответов агрегатора .
+* **Контроль качества:** Сравнение ожидаемых аргументов с тем, что фактически сгенерировала модель.
 
-🔍 Тест 2/3: 'Какая погода в Бресте?'
-➡️ Вызов 1: weather({'city': 'Brest'})
-⚙️ Результат weather: {"temperature": 0, "condition": "unknown"}
+---
 
-🔍 Тест 3/3: 'Какая погода в Гродно?'
-➡️ Вызов 1: weather({'city': 'Гродно'})
-⚙️ Результат weather: {"temperature": 0, "condition": "unknown"}
-                                   Результаты тестов
-┏━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Тест ┃ Функция ┃ Запрос                 ┃ Результат                                  ┃
-┡━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│    1 │ weather │ Какая погода в Минске? │ {"temperature": 0, "condition": "unknown"} │
-│    2 │ weather │ Какая погода в Бресте? │ {"temperature": 0, "condition": "unknown"} │
-│    3 │ weather │ Какая погода в Гродно? │ {"temperature": 0, "condition": "unknown"} │
-└──────┴─────────┴────────────────────────┴────────────────────────────────────────────┘
-```
+## Инфраструктура и CI/CD
 
-### Пример формирования suite.yaml
-```yaml
-- query: "Какая погода в Минске?"
-  description: "Проверка функции weather для города Минск"
+* **Pipeline:** Тесты запускаются при `push` в ветку `dev` и при `Pull Request` в `main`.
+* **Цель:** Автоматизировать проверку "мелких нестыковок", освобождая время ревьюера.
 
-- query: "Какая погода в Бресте?"
-  description: "Проверка функции weather для города Брест"
+---
 
-- query: "Какая погода в Гродно?"
-  description: "Проверка функции weather для города без данных"
+##  Безопасность и Секреты (FAQ)
 
-- query: Поставь дату 2025-12-31 в "Окончание" где "Название" = "Кредит Весна" в базе данных you_uri_database используя токен <#secret.NOTION_TOKEN>
-```
-****Все ключи записываюся в виде <#secret.YOUR_KEY>***
+> **"Как прокинуть ключи из репозитория функции в тесты?"**
+> **Решение:** Docker, как было в предыдущец версии. Использовать **GitHub Organization Secrets** ?
+>
+> **Трассировка токенов:**
+> Можно добавить в Allure-отчет блок `Metadata`, куда после каждого теста `pytest` будет записывать расход из ответа модели: `usage.total_tokens`.  
+> Трассировка и лимиты: Внедрить систему мониторинга токенов для защиты от злоупотреблений и контроля затрат агрегатора.
 
-
-### Пример формирования function.py
-```python
-def weather(arguments: dict) -> str: ...
-```
-
-### Пример формирования schema.json
-```json
-{
-  "name": "weather",
-  "description": "Получает текущую погоду для указанного города",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "city": {
-        "type": "string",
-        "description": "Название города"
-      }
-    },
-    "required": ["city"]
-  }
-}
-```
-
-## 📊 CI/CD (Docker + GitHub Actions)
-Проект поддерживает запуск тестов в CI через Docker‑контейнер.
-
-Как это работает
-Репозиторий А — содержит функцию и её схему (.py + .json + .yaml).
-
-Репозиторий B — содержит Dockerfile и тестовый фреймворк (этот проект).
-
-Workflow:
-
-Собирает Docker‑образ из репозитория B.
-
-Монтирует код из репозитория А внутрь контейнера.
-
-Запускает тестовый фреймворк с указанными аргументами (--function, --schema, --tests).
-
-Прогоняет тесты, формирует отчёт (LocalReporter для локального запуска или CIReporter для GitHub Actions).
-
-Результаты сохраняются в артефакты CI/CD (test_results.json) или выводятся в консоль.
-
-Workflow для репозитория А
-В репозитории с функцией нужно создать файл .github/workflows/run-tests.yml:
-```yml
-name: Run Function Tests
-
-
-on:
-  workflow_dispatch:
-
-jobs:
-  call-tests:
-    uses: Smaipl/Tests-Function-Api-Calling-OpenAi/.github/workflows/test_functions_on_model.yml@main
-    with:
-      function_name: "name function"
-    secrets:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      ADDITIONAL_SECRETS: ${{ secrets.ADDITIONAL_SECRETS }} # секрет записывается в формате json
-      # 
-      #   {
-      #      "NAME_SECRET": "VALUE_SECRET",
-      #      "NAME_SECRET_TWO": "VALUE_SECRET_TWO"
-      #   }
-      # 
-```
+---
