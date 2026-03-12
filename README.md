@@ -1,9 +1,8 @@
-# 🧪 Модуль тестирования [v 0.4.0]
+# Модуль тестирования [v 0.4.0]
 
-![Python 3.12](https://img.shields.io)
-![Node.js 24](https://img.shields.io)
-![Allure 3](https://img.shields.io)
-
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24%2B-green?logo=nodedotjs&logoColor=white)
+![Allure 3](https://img.shields.io/badge/Allure-3-orange?logo=allure&logoColor=white)
 
 Комплексная проверка взаимодействия JSON-схем с Python-функциями и вызова моделей через агрегаторы.
 
@@ -11,7 +10,7 @@
 
 ---
 
-## 🛠 1. Модуль: Валидация и Синхронизация
+##  1. Модуль: Валидация и Синхронизация
 
 Автоматическая проверка соответствия манифеста функции (JSON Schema) её реализации в коде.
 
@@ -30,7 +29,7 @@
 
 ---
 
-## 🤖 2. Модуль: Агрегатор моделей (OpenRouter / KIA)
+##  2. Модуль: Агрегатор моделей (OpenRouter / KIA)
 >
 > В разработке
 
@@ -42,14 +41,14 @@
 
 ---
 
-## 🚄 Инфраструктура и CI/CD
+## Инфраструктура и CI/CD
 
 * **Pipeline:** Тесты запускаются при `push` в ветку `dev` и при `Pull Request` в `main`.
 * **Цель:** Автоматизировать проверку "мелких нестыковок", освобождая время ревьюера.
 
 ---
 
-## 🔒 Безопасность и Секреты (FAQ)
+##  Безопасность и Секреты (FAQ)
 
 > **"Как прокинуть ключи из репозитория функции в тесты?"**
 > **Решение:** Docker, как было в предыдущец версии. Использовать **GitHub Organization Secrets** ?
