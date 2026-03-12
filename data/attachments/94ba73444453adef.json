@@ -1,0 +1,15 @@
+{
+  "name": "test_extra_parameters_and_property",
+  "description": "Лишние ключи в Parameters и внутри свойства prompt",
+  "parameters": {
+    "type": "object",
+    "params_extra": "level_2_extra",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Ок",
+        "prop_extra": "level_3_extra"
+      }
+    }
+  }
+}

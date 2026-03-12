@@ -1,0 +1,16 @@
+{
+  "name": "test_three_extra_at_root",
+  "description": "3 лишних ключа только в корне Schema",
+  "extra_1": "val1",
+  "extra_2": "val2",
+  "extra_3": "val3",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Ок"
+      }
+    }
+  }
+}

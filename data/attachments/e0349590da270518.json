@@ -1,0 +1,15 @@
+{
+  "name": "test_extra_root_and_property",
+  "description": "Лишние ключи в корне и внутри свойства prompt",
+  "root_extra": "top_level_junk",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Ок",
+        "prop_extra": "deep_level_junk"
+      }
+    }
+  }
+}

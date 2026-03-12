@@ -1,0 +1,15 @@
+{
+  "name": "test_extra_root_and_parameters",
+  "description": "Лишние ключи в корне и в объекте параметров",
+  "root_extra": "first_bad_key",
+  "parameters": {
+    "type": "object",
+    "params_extra": "second_bad_key",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Ок"
+      }
+    }
+  }
+}

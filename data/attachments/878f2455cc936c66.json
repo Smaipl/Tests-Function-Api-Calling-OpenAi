@@ -1,0 +1,4 @@
+{
+  "name": "test_missing_parameters_fields",
+  "description": "Пропуск поля 'type' в свойстве 'prompt'"
+}

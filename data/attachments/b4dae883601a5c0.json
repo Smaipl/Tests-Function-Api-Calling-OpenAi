@@ -1,0 +1,16 @@
+{
+  "name": "test_three_extra_in_parameters",
+  "description": "3 лишних ключа внутри объекта parameters",
+  "parameters": {
+    "type": "object",
+    "p_extra_A": 1,
+    "p_extra_B": 2,
+    "p_extra_C": 3,
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Ок"
+      }
+    }
+  }
+}

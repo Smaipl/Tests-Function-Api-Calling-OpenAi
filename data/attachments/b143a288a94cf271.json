@@ -1,0 +1,16 @@
+{
+  "name": "test_missing_type_level_2_fields",
+  "description": "Пропуск поля 'type' в свойстве 'prompt'",
+  "parameters": {
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации",
+        "default": ""
+      }
+    },
+    "required": [
+      "api_key"
+    ]
+  }
+}

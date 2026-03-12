@@ -1,0 +1,16 @@
+{
+  "name": "test_missing_description_level_1_field",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации",
+        "default": ""
+      }
+    },
+    "required": [
+      "api_key"
+    ]
+  }
+}
