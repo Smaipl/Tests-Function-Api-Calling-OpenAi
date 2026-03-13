@@ -11,7 +11,7 @@ from pydantic import (
 
 class PropertiesModelaAi(BaseModel):
     temperature: float
-    max_token: int = Field(min_length=1, max_length=1000)
+    max_token: int = Field(lt=1, gt=1000)
     # request_token: int
     # response_token: int
     tool_choise: Literal["none", "auto", "required"] = Field(default="auto")
