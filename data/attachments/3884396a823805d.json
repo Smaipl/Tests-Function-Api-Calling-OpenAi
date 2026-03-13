@@ -1,0 +1,15 @@
+{
+  "name": "test_all_required_fields",
+  "description": "Пропуск поля 'type' в свойстве 'prompt'",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации",
+        "default": ""
+      }
+    },
+    "required": []
+  }
+}

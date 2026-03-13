@@ -1,0 +1,15 @@
+{
+  "name": "get_weather",
+  "description": "Получение погоды в городе",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "location": {
+        "type": "string",
+        "description": "Название города",
+        "default": "Minsk"
+      }
+    },
+    "required": []
+  }
+}

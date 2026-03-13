@@ -1,0 +1,14 @@
+{
+  "name": "test_missing_fields_default",
+  "description": "Пропуск поля 'default' в свойстве 'prompt'",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации"
+      }
+    },
+    "required": []
+  }
+}

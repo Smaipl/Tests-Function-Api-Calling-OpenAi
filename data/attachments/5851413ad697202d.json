@@ -1,0 +1,19 @@
+{
+  "name": "test_extra_property_field",
+  "description": "Лишний ключ 'metadata' внутри Property 'prompt'",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации",
+        "default": "",
+        "enum": [],
+        "metadata": {
+          "internal_id": 123
+        }
+      }
+    },
+    "required": []
+  }
+}

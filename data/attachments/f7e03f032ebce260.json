@@ -1,0 +1,16 @@
+{
+  "name": "test_all_fields",
+  "description": "Пропуск поля 'type' в свойстве 'prompt'",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации",
+        "default": "",
+        "enum": []
+      }
+    },
+    "required": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "test_extra_fields_on_all_levels",
+  "description": "Схема с лишними ключами в корне, в параметрах и в свойствах",
+  "root_extra_key": "I should not be here",
+  "parameters": {
+    "type": "object",
+    "parameters_extra_key": 12345,
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Текст для генерации",
+        "default": "",
+        "enum": [],
+        "property_extra_key": {
+          "meta": "data"
+        }
+      }
+    },
+    "required": []
+  }
+}
