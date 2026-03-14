@@ -1,0 +1,2 @@
+def function_name(arguments):
+    v1 = arguments.get('unknown_key', 'default')

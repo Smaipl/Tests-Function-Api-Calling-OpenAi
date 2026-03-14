@@ -1,0 +1,8 @@
+
+❌ Функция mismatch_function_name не найдена в исходном коде
+Детали: {
+    "expected": "mismatch_function_name",
+    "available": [
+        "function_name"
+    ]
+}

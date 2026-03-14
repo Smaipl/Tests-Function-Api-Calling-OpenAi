@@ -1,0 +1,13 @@
+{
+  "name": "test_missing_all_fields",
+  "description": "В объекте внутри properties вообще нет обязательных полей",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "some_field": {
+        "enum": []
+      }
+    },
+    "required": []
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "Level 1": [
+    "root_extra_key"
+  ],
+  "Level 2": [
+    "parameters_extra_key"
+  ],
+  "Level 3": [
+    "property_extra_key"
+  ]
+}

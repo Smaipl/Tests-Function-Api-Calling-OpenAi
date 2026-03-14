@@ -1,0 +1,19 @@
+{
+  "name": "missing_multiple_definitions",
+  "description": "Тест: забыли описать обязательные параметры",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "content": {
+        "type": "string",
+        "description": "Контент сообщения",
+        "default": ""
+      }
+    },
+    "required": [
+      "content",
+      "api_key",
+      "model_id"
+    ]
+  }
+}
