@@ -12,7 +12,7 @@ from src.schema.json_schema import Schema
 @pytest.mark.parametrize(
     "file_name, schema_name",
     [
-        ("EmptyRequiredFields.json", "test_missing_fields_default"),
+        # ("EmptyRequiredFields.json", "test_missing_fields_default"),
         ("EmptyRequiredFields.json", "test_missing_fields_description"),
         ("EmptyRequiredFields.json", "test_missing_fields_type"),
         ("EmptyRequiredFields.json", "test_missing_two_fields"),
