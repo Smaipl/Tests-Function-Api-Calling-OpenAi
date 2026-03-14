@@ -1,0 +1,1 @@
+Найдено: InfoArg(stroke=2, key='unknown_key', val='default')

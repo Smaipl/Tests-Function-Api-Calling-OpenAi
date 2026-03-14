@@ -1,0 +1,4 @@
+Найдено: InfoArg(stroke=3, key='prompt', val='')
+Найдено: InfoArg(stroke=4, key='limit', val=10)
+Найдено: InfoArg(stroke=5, key='is_active', val=True)
+Найдено: InfoArg(stroke=6, key='bla_bla_bla', val=True)
