@@ -37,6 +37,12 @@ class UnregisterField(BaseFunctionException):
     pass
 
 
+class MismatchRequiredFieldsInKey(BaseFunctionException):
+    """Ошибка: использованы не существующие поля в properties['keys']"""
+
+    pass
+
+
 class FunctionNameMismatch(BaseFunctionException):
     """Ошибка: имя функции в коде не совпадает с именем в JSON-схеме."""
 

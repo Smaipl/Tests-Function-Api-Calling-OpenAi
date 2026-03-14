@@ -17,10 +17,6 @@ from src.utils.interfaces import TYPE_MAPPING
 
 
 def normalize_value(val: Any, target_type_str: str) -> Any:
-    """
-    Приводит значение из кода к типу из JSON-схемы для честного сравнения.
-    """
-
     target_type = TYPE_MAPPING.get(target_type_str)
     if target_type is None:
         return val
@@ -89,10 +85,16 @@ class FunctionSchema(BaseModel):
 
         return self
 
-    @model_validator(mode="after")
-    def validate_func_schema(self) -> "FunctionSchema":
-        errors: list = []
+    def _check_signature(self, errors: list):
+        if len(self.arguments) != 1 or "arguments" not in self.arguments:
+            errors.append(
+                InvalidFunctionSignature(
+                    message="Функция должна принимать ровно один аргумент: 'arguments'",
+                    fields=list(self.arguments.keys()),
+                )
+            )
 
+    def _check_func_name(self, errors: list):
         if self.json_schema.name not in self._all_call_obj:
             errors.append(
                 FunctionNameMismatch(
@@ -104,14 +106,7 @@ class FunctionSchema(BaseModel):
                 )
             )
 
-        if len(self.arguments) != 1 or "arguments" not in self.arguments:
-            errors.append(
-                InvalidFunctionSignature(
-                    message="Функция должна принимать ровно один аргумент: 'arguments'",
-                    fields=list(self.arguments.keys()),
-                )
-            )
-
+    def _check_sync_json_with_code(self, errors: list):
         properties = self.json_schema.parameters.properties
 
         for info in self._args_map:
@@ -129,26 +124,37 @@ class FunctionSchema(BaseModel):
                 )
                 continue
 
-            schema_default = prop.default
-            code_default = info.val
+            self.__check_sync_type_json_with_code(prop, info, errors)
 
-            normalized_code_val = normalize_value(code_default, prop.property_type)
-            normalized_schema_val = normalize_value(schema_default, prop.property_type)
+    def __check_sync_type_json_with_code(self, prop, info, errors: list):
+        schema_default = prop.default
+        code_default = info.val
 
-            if normalized_code_val != normalized_schema_val:
-                errors.append(
-                    DefaultValueMismatch(
-                        message=f"Несовпадение default для '{info.key}': ",
-                        fields={
-                            "line": info.stroke,
-                            "key": info.key,
-                            "values": {
-                                "in_python_code": normalized_code_val,
-                                "in_json_schema": schema_default,
-                            },
+        normalized_code_val = normalize_value(code_default, prop.property_type)
+        normalized_schema_val = normalize_value(schema_default, prop.property_type)
+
+        if normalized_code_val != normalized_schema_val:
+            errors.append(
+                DefaultValueMismatch(
+                    message=f"Несовпадение default для '{info.key}': ",
+                    fields={
+                        "line": info.stroke,
+                        "key": info.key,
+                        "values": {
+                            "in_python_code": normalized_code_val,
+                            "in_json_schema": schema_default,
                         },
-                    )
+                    },
                 )
+            )
+
+    @model_validator(mode="after")
+    def validate_func_schema(self) -> "FunctionSchema":
+        errors: list = []
+
+        self._check_func_name(errors)
+        self._check_signature(errors)
+        self._check_sync_json_with_code(errors)
 
         if errors:
             raise ExceptionGroup("Ошибки валидации и синхронизации", errors)

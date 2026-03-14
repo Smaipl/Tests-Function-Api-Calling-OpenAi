@@ -1,58 +1,12 @@
 import inspect
-import json
-import textwrap
-import types
-from pathlib import Path
 
 import allure
 import pytest
+from conftest import NAME, get_mock_function
 
 from src.exceptions.custom_exceptions import InvalidFunctionSignature
 from src.schema.json_schema import Schema
 from src.schema.py_schema import FunctionSchema
-
-FOLDER = Path("src/mock")
-NAME = "function_name"
-
-
-def get_mock_function(*args):
-    args_str = ", ".join(map(str, args))
-    source = f"def {NAME}({args_str}): pass"
-
-    func_module: inspect.CodeType = compile(source, "<string>", "exec")
-    func_code: inspect.CodeType = [
-        c for c in func_module.co_consts if isinstance(c, types.CodeType)
-    ][0]
-
-    func = types.FunctionType(func_code, globals(), NAME)
-    func.__source__ = source
-
-    return func
-
-
-@pytest.fixture
-def get_json_schema():
-    def _loader(file_name: str, schema_name: str):
-        file_path = FOLDER / file_name
-
-        with allure.step(f"Чтение файла {file_name}"):
-            with open(file_path, encoding="utf-8") as f:
-                raw_json = json.load(f)
-
-        with allure.step(f"Поиск схемы '{schema_name}'"):
-            try:
-                schema = next(j for j in raw_json if j["name"] == schema_name)
-                # Прикрепляем JSON прямо к отчету Allure
-                allure.attach(
-                    json.dumps(schema, indent=2, ensure_ascii=False),
-                    name=f"Schema: {schema_name}",
-                    attachment_type=allure.attachment_type.JSON,
-                )
-                return schema
-            except StopIteration:
-                pytest.fail(f"Схема с именем '{schema_name}' не найдена в {file_name}")
-
-    return _loader
 
 
 @allure.epic("Синхронизация Кода и Схемы")
@@ -61,22 +15,26 @@ def get_json_schema():
 @pytest.mark.parametrize(
     "file_name, schema_name, function",
     [
-        ("InvalidFunctionSignature.json", NAME, get_mock_function()),
-        ("InvalidFunctionSignature.json", NAME, get_mock_function("no_arguments")),
+        ("InvalidFunctionSignature.json", NAME, get_mock_function(NAME, "pass")),
         (
             "InvalidFunctionSignature.json",
             NAME,
-            get_mock_function("no_arguments", "arguments"),
+            get_mock_function(NAME, "pass", "no_arguments"),
         ),
         (
             "InvalidFunctionSignature.json",
             NAME,
-            get_mock_function("no_arguments", "arg"),
+            get_mock_function(NAME, "pass", "no_arguments", "arguments"),
         ),
         (
             "InvalidFunctionSignature.json",
             NAME,
-            get_mock_function("no_arguments", "arguments", "asd"),
+            get_mock_function(NAME, "pass", "no_arguments", "arg"),
+        ),
+        (
+            "InvalidFunctionSignature.json",
+            NAME,
+            get_mock_function(NAME, "pass", "no_arguments", "arguments", "asd"),
         ),
     ],
 )
@@ -92,7 +50,7 @@ def test_function_incorrect_arguments(
     json_data = get_json_schema(file_name, schema_name)
     schema_obj = Schema.model_validate(json_data)
 
-    source = textwrap.dedent(function.__source__)
+    source = getattr(function, "__source__", "")
 
     sig = inspect.signature(function)
 
@@ -114,16 +72,19 @@ def test_function_incorrect_arguments(
 @pytest.mark.parametrize(
     "file_name, schema_name, function",
     [
-        ("InvalidFunctionSignature.json", NAME, get_mock_function("arguments")),
+        (
+            "InvalidFunctionSignature.json",
+            NAME,
+            get_mock_function(NAME, "pass", "arguments"),
+        ),
     ],
 )
 def test_function_coorect_arguments(file_name, schema_name, function, get_json_schema):
     allure.dynamic.title(f"Позитивный тест имени: {schema_name}")
-    # 1. Загружаем схему
     json_data = get_json_schema(file_name, schema_name)
     schema_obj = Schema.model_validate(json_data)
 
-    source = textwrap.dedent(function.__source__)
+    source = getattr(function, "__source__", "")
     sig = inspect.signature(function)
 
     FunctionSchema(arguments=sig.parameters, json_schema=schema_obj, source_code=source)

@@ -10,9 +10,7 @@
           "description": "Текст для генерации"
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -26,9 +24,7 @@
           "default": "Текст для генерации"
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -42,9 +38,7 @@
           "default": ""
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -57,9 +51,7 @@
           "description": "Текст для генерации"
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -72,9 +64,7 @@
           "enum": []
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -88,9 +78,7 @@
           "default": ""
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -102,9 +90,7 @@
     "description": "Пропуск поля 'type' в свойстве 'prompt'",
     "parameters": {
       "type": "object",
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -118,9 +104,7 @@
           "default": ""
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -135,9 +119,7 @@
           "default": ""
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   },
   {
@@ -153,9 +135,7 @@
           "enum": []
         }
       },
-      "required": [
-        "api_key"
-      ]
+      "required": []
     }
   }
 ]
