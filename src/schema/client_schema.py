@@ -1,7 +1,5 @@
-from pathlib import Path
 from typing import Annotated, Any, Literal
 
-import yaml
 from pydantic import AfterValidator, BaseModel, Field, HttpUrl, PrivateAttr
 
 StrUrl = Annotated[HttpUrl, AfterValidator(lambda v: str(v))]
@@ -36,9 +34,3 @@ class ClientModel(BaseModel):
     _total_token: int = PrivateAttr(default=0)
 
     model_config = {"populate_by_name": True, "arbitrary_types_allowed": True}
-
-    @classmethod
-    def load(cls, conf: Path) -> "ClientModel":
-        with open(conf, encoding="utf-8") as f:
-            config_dict = yaml.safe_load(f)
-        return cls(**config_dict)
