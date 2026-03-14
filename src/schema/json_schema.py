@@ -9,7 +9,7 @@ from src.exceptions.custom_exceptions import (
     TypeMismatchJsonToPython,
     UnregisterField,
 )
-from src.utils.interfaces import DEFAULT_REQUIRED_FIELDS, TYPE_MAPPING
+from src.utils.interfaces import DEFAULT_REQUIRED_FIELDS_PROPERTIES, TYPE_MAPPING
 
 
 def get_mismatch_required_in_ptop_keys(
@@ -60,7 +60,11 @@ class Parameters(BaseModel):
     parameter_type: Literal["object"] = Field(alias="type")
     properties: dict[str, Property]
     required: list[str] = Field(default_factory=list)
-    _required_fields_in_prop: list[str] = PrivateAttr(default=DEFAULT_REQUIRED_FIELDS)
+    _required_fields_in_prop: list[str] = PrivateAttr(
+        default_factory=lambda: list(
+            set(DEFAULT_REQUIRED_FIELDS_PROPERTIES) & set(Property.model_fields.keys())
+        )
+    )
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
