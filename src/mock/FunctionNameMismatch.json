@@ -14,7 +14,7 @@
         }
     },
     {
-        "name": "correct_function_name",
+        "name": "function_name",
         "description": "Имена в схеме и коде совпадают",
         "parameters": {
             "type": "object",

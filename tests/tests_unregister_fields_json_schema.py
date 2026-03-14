@@ -1,38 +1,8 @@
-import json
-from pathlib import Path
-
 import allure
 import pytest
 
 from src.exceptions.custom_exceptions import UnregisterField
 from src.schema.json_schema import Schema
-
-FOLDER = Path("src/mock")
-
-
-@pytest.fixture
-def get_json_schema():
-    def _loader(file_name: str, schema_name: str):
-        file_path = FOLDER / file_name
-
-        with allure.step(f"Чтение файла {file_name}"):
-            with open(file_path, encoding="utf-8") as f:
-                raw_json = json.load(f)
-
-        with allure.step(f"Поиск схемы '{schema_name}'"):
-            try:
-                schema = next(j for j in raw_json if j["name"] == schema_name)
-                # Прикрепляем JSON прямо к отчету Allure
-                allure.attach(
-                    json.dumps(schema, indent=2, ensure_ascii=False),
-                    name=f"Schema: {schema_name}",
-                    attachment_type=allure.attachment_type.JSON,
-                )
-                return schema
-            except StopIteration:
-                pytest.fail(f"Схема с именем '{schema_name}' не найдена в {file_name}")
-
-    return _loader
 
 
 @allure.epic("Валидация JSON схем")

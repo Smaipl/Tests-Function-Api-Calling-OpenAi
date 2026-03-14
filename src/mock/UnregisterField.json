@@ -13,9 +13,7 @@
                     "enum": []
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     },
     {
@@ -32,9 +30,7 @@
                     "enum": []
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     },
     {
@@ -53,9 +49,7 @@
                     }
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     },
     {
@@ -172,9 +166,7 @@
                     "prop_extra_Z": null
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     },
     {
@@ -195,9 +187,7 @@
                     }
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     },
     {
@@ -212,9 +202,7 @@
                     "default": ""
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     },
     {
@@ -230,9 +218,7 @@
                     "enum": []
                 }
             },
-            "required": [
-                "api_key"
-            ]
+            "required": []
         }
     }
 ]
