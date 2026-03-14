@@ -1,0 +1,16 @@
+[
+    {
+        "name": "function_name",
+        "description": "Имена в схеме и коде совпадают",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "text",
+                    "default": ""
+                }
+            }
+        }
+    }
+]

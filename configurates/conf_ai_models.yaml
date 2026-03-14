@@ -1,0 +1,37 @@
+# Файл конфигуратор котоый будет создаваться в корне репозитория функции вместе с шаблоно оргнизации
+# В нем будут закомментированы  стандартные можели для использования котрые используются на платформе SMAIPL
+# По принцципу указанному ниже будут добавляться другие модели используеме разработчикм
+# Учавстворвать в работе может только 1 модель
+
+aggregator:
+  name: OPENROUTER
+  base_url: "https://openrouter.ai"
+  models:
+    name: "openai/gpt-4o-mini"
+    semaphore: 25
+    max_tokens: 1000
+    temperature: 0.3
+  role: "Ты инженер-программист. Твоя задача — строго следовать JSON-схеме и вызывать tools."
+  timeout: 60
+  tool_choice: "auto"
+
+    # gpt_5_1_instant:
+    #   name: "openai/gpt-5.1-instant"
+    #   semaphore: 15
+    #   max_tokens: 2000
+    #   temperature: 0.5 
+
+  # name: KIE_AI
+  # base_url: "https://api.kie.ai"
+  # models:
+  #   gpt_4o_mini:
+  #     name: "gpt-4o-mini"
+  #     semaphore: 20
+  #     max_tokens: 1000
+  #     temperature: 0.3
+  #   gpt_5_1_instant:
+  #     name: "gpt-5.1-instant"
+  #     semaphore: 10
+  #     max_tokens: 2000
+  #     temperature: 0.5 
+    

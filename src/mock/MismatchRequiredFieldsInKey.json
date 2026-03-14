@@ -1,0 +1,101 @@
+[
+    {
+        "name": "empty_properties_test",
+        "description": "Тест: required есть, а properties пуст",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [
+                "user_id"
+            ]
+        }
+    },
+    {
+        "name": "missing_multiple_definitions",
+        "description": "Тест: забыли описать обязательные параметры",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "description": "Контент сообщения",
+                    "default": ""
+                }
+            },
+            "required": [
+                "content",
+                "api_key",
+                "model_id"
+            ]
+        }
+    },
+    {
+        "name": "typo_error_test",
+        "description": "Тест на опечатку в ключе required",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "Текст запроса",
+                    "default": "hello"
+                }
+            },
+            "required": [
+                "prompts"
+            ]
+        }
+    },
+    {
+        "name": "get_weather",
+        "description": "Получение погоды в городе",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "type": "string",
+                    "description": "Название города",
+                    "default": "Minsk"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "all_empty_test",
+        "description": "Тест: и properties, и required пустые (крайний случай)",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "valid_full_schema",
+        "description": "Правильная схема: все в наличии и с default",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "to": {
+                    "type": "string",
+                    "description": "Email получателя",
+                    "default": null
+                },
+                "subject": {
+                    "type": "string",
+                    "description": "Тема письма",
+                    "default": "No Subject"
+                },
+                "body": {
+                    "type": "string",
+                    "description": "Текст письма",
+                    "default": ""
+                }
+            },
+            "required": [
+                "to",
+                "body"
+            ]
+        }
+    }
+]

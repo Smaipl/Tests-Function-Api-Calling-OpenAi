@@ -1,0 +1,21 @@
+name: Dashboard tests for Tests-Function-Api-Calling-OpenAi
+output: ./allure-report
+# historyPath: ./history.jsonl
+appendHistory: fasle
+qualityGate:
+  rules:
+    - maxFailures: 5
+      fastFail: true
+plugins:
+  awesome:
+    options:
+      reportName: Test Module Validate
+      singleFile: false
+      reportLanguage: ru
+      open: false
+      publish: true
+  log:
+    options:
+      groupBy: none
+variables:
+  App Version: 0.4.0 
