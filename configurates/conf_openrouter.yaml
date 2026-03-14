@@ -1,5 +1,0 @@
-OPENROUTER:
-  base_url: https://openrouter.ai/api/v1
-  model: upstage/solar-pro-3:free
-  role: Ты ассистент с поддержкой tools
-  temperature !!float: 0.1

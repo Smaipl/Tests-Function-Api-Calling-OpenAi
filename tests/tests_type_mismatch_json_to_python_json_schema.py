@@ -38,7 +38,6 @@ def test_type_mismatch_error(file_name, schema_name, get_json_schema):
     [
         ("TypeMismatchJsonToPython.json", "test_sync_type_object"),
         ("TypeMismatchJsonToPython.json", "test_sync_type_array"),
-        ("TypeMismatchJsonToPython.json", "test_sync_type_null"),
         ("TypeMismatchJsonToPython.json", "test_sync_type_number"),
         ("TypeMismatchJsonToPython.json", "test_sync_type_boolean"),
     ],

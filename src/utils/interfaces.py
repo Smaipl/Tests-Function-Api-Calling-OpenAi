@@ -1,11 +1,10 @@
-DEFAULT_REQUIRED_FIELDS = ["property_type", "description", "default"]
+DEFAULT_REQUIRED_FIELDS_PROPERTIES = ["property_type", "description"]
 
 TYPE_MAPPING = {
     "object": dict,
     "array": list,
     "string": str,
-    "number": float | int,
+    "number": float,
     "integer": int,
     "boolean": bool,
-    "null": type(None),
 }

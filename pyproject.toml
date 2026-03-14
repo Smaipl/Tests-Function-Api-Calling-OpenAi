@@ -14,6 +14,7 @@ dependencies = [
     "pytest-coverage>=0.0",
     "allure-pytest==2.15.2",
     "allure-python-commons==2.15.2",
+    "pydantic-settings>=2.13.1",
 ]
 
 [project.optional-dependencies]
