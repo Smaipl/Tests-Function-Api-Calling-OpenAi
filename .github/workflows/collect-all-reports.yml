@@ -79,4 +79,6 @@ jobs:
         uses: actions/deploy-pages@v4
       
       - name: Show Result
-        run: echo "✅ Сайт обновлен! URL: ${{ steps.deployment.outputs.page_url }}"
+        run: |
+          echo "✅ Сайт обновлен!"
+          echo "URL: ${{ steps.deployment.outputs.page_url }}"
