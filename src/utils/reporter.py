@@ -24,7 +24,10 @@ class LocalReporter:
                 result = chain[0]["result"]
                 query = detail.get("query", "")
                 table.add_row(
-                    str(i), func, query[:40] + ("..." if len(query) > 40 else ""), str(result)
+                    str(i),
+                    func,
+                    query[:40] + ("..." if len(query) > 40 else ""),
+                    str(result),
                 )
 
         console.print(table)

@@ -1,0 +1,62 @@
+name: 'AI Function & Schema Validator'
+description: 'Валидация функций и генерация отчета'
+
+inputs:
+  func_path:
+    description: 'Путь к .py файлу функции'
+    required: true
+  schema_path:
+    description: 'Путь к .json файлу схемы'
+    required: true
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    - name: Run Pytest Validation
+      shell: bash
+      run: |
+        # Заходим в папку экшена для синхронизации зависимостей
+        cd ${{ github.action_path }}
+        uv sync
+        
+        # Прокидываем пути. ВАЖНО: PYTHONPATH должен видеть src внутри экшена
+        export PYTHONPATH="$PYTHONPATH:${{ github.action_path }}"
+        export INPUT_FUNC_PATH="${{ github.workspace }}/${{ inputs.func_path }}"
+        export INPUT_SCHEMA_PATH="${{ github.workspace }}/${{ inputs.schema_path }}"
+        
+
+        ALLURE_RESULTS_DIR="${{ github.workspace }}/allure-results"
+
+        uv run pytest "${{ github.action_path }}/runner.py" \
+          --alluredir="$ALLURE_RESULTS_DIR" \
+          --clean-alluredir \
+          -v
+
+      continue-on-error: true
+
+    - name: Generate Allure Report
+      shell: bash
+      run: |
+        # Используем переменные Гитхаба напрямую для надежности
+        RESULTS_DIR="${{ github.workspace }}/allure-results"
+        REPORT_DIR="${{ github.workspace }}/allure-report"
+        
+        # 1. Сначала ставим зависимости ТАМ, ГДЕ ЛЕЖИТ ЭКШЕН
+        if [ ! -d "${{ github.action_path }}/node_modules" ]; then
+          cd ${{ github.action_path }} && npm install
+        fi
+
+        # 2. ПЕРЕХОДИМ В КОРЕНЬ ПРОЕКТА (Workspace), чтобы пути были "родными"
+        cd ${{ github.workspace }}
+
+        echo "🚀 Генерация HTML отчета..."
+        # Вызываем npx через полный путь к экшену, но в контексте Workspace
+        npx --prefix ${{ github.action_path }} allure awesome "$RESULTS_DIR" \
+          --config ${{ github.action_path }}/allurerc.yaml \
+          --output "$REPORT_DIR"

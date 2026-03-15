@@ -1,6 +1,6 @@
 [project]
 name = "function-api-calling"
-version = "0.2.0"
+version = "0.4.0"
 description = "Тесты и функции для API"
 requires-python = ">=3.12"
 dependencies = [
@@ -8,6 +8,13 @@ dependencies = [
     "pyyaml>=6.0.2",
     "rich>=14.2.0",
     "pytest>=7.0.0",
+    "dotenv>=0.9.9",
+    "requests>=2.32.5",
+    "orjson>=3.11.7",
+    "pytest-coverage>=0.0",
+    "allure-pytest==2.15.2",
+    "allure-python-commons==2.15.2",
+    "pydantic-settings>=2.13.1",
 ]
 
 [project.optional-dependencies]

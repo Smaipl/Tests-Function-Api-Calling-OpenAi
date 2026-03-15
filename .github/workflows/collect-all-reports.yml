@@ -1,0 +1,82 @@
+name: Collect & Deploy All Reports
+
+on:
+  workflow_run:
+    workflows: ["Check My Functions"]
+    types: [completed]
+  workflow_dispatch: 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read  # Критично для чтения артефактов из других репо
+
+jobs:
+  collect-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout Central Repo
+        uses: actions/checkout@v4
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: report-*
+          merge-multiple: false
+          path: ./raw-artifacts
+        continue-on-error: true
+
+      - name: Organize Reports
+        if: hashFiles('./raw-artifacts/**') != ''
+        run: |
+          mkdir -p ./final-site
+          cd ./raw-artifacts
+          
+          # Проходим по всем скачанным папкам
+          for folder in report-*; do
+            if [ -d "$folder" ]; then
+              # Создаем папку с именем артефакта (она уникальна: report-owner__repo-runid)
+              mkdir -p ../final-site/$folder
+              cp -r $folder/* ../final-site/$folder/
+            fi
+          done
+
+          # Генерируем главную страницу index.html
+          cd ../final-site
+          {
+            echo "<html><head><title>Все отчеты команды</title><style>body{font-family:sans-serif;padding:20px;} ul{list-style:none;} li{margin:10px 0;} a{text-decoration:none;color:#0366d6;font-weight:bold;} a:hover{text-decoration:underline;}</style></head><body>"
+            echo "<h1>📊 Отчеты валидации функций</h1>"
+            echo "<p>Последнее обновление: $(date '+%Y-%m-%d %H:%M:%S')</p>"
+            echo "<ul>"
+            for dir in */; do
+              if [ "$dir" != "./" ]; then
+                clean_name=${dir%/}
+                echo "<li>👉 <a href='${clean_name}/index.html'>${clean_name}</a></li>"
+              fi
+            done
+            echo "</ul></body></html>"
+          } > index.html
+
+      - name: Create Empty Report (if no artifacts)
+        if: hashFiles('./raw-artifacts/**') == ''
+        run: |
+          mkdir -p ./final-site
+          echo "<html><body><h1>Пока нет отчетов</h1><p>Запустите тесты в репозиториях команды.</p></body></html>" > ./final-site/index.html
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './final-site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      
+      - name: Show Result
+        run: |
+          echo "✅ Сайт обновлен!"
+          echo "URL: ${{ steps.deployment.outputs.page_url }}"
