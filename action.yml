@@ -1,53 +1,79 @@
-name: 'AI Function & Schema Validator'
-description: 'Действие для валидации Python функции против JSON схемы и генерации Allure отчета'
+name: Collect & Deploy All Reports
 
-inputs:
-  func_path:
-    description: 'Относительный путь к .py файлу в рабочем репозитории'
-    required: true
-  schema_path:
-    description: 'Относительный путь к .json файлу в рабочем репозитории'
-    required: true
+on:
+  # Запускается, когда ЛЮБОЙ репо завершает workflow "Check My Functions"
+  workflow_run:
+    workflows: ["Check My Functions"]
+    types:
+      - completed
 
-runs:
-  using: 'composite'
-  steps:
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
-      with:
-        enable-cache: true
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read # Право читать артефакты из других репо
 
-    - name: Install Python dependencies
-      shell: bash
-      run: |
-        cd ${{ github.action_path }}
-        uv sync
+jobs:
+  collect-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 🔥 МАГИЯ: Скачиваем ВСЕ артефакты с префиксом "report-"
+      # Они скачаются в разные папки, так как имена уникальны
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: report-*
+          merge-multiple: false # Важно: не сливать файлы, а сохранить структуру папок
+          path: ./raw-artifacts
+
+      - name: Organize Reports
+        run: |
+          mkdir -p ./final-site
+          
+          # Проходим по всем скачанным папкам
+          cd ./raw-artifacts
+          for folder in report-*; do
+            # Извлекаем имя репо из имени папки (убираем префикс report- и суффикс -run_id)
+            # Пример имени: report-logg1n__my-repo-98765
+            # Нам нужно сделать папку: logg1n__my-repo
+            
+            # Простой вариант: используем имя папки как есть (оно уникально)
+            dest_name=$folder
+            mkdir -p ../final-site/$dest_name
+            cp -r $folder/* ../final-site/$dest_name/
+          done
+
+          # Генерируем главную страницу (index.html) со списком всех отчетов
+          cd ../final-site
+          echo "<html><head><title>Все отчеты команды</title><style>body{font-family:sans-serif;} ul{list-style:none;} li{margin:10px;}</style></head><body>" > index.html
+          echo "<h1>📊 Отчеты валидации функций</h1>" >> index.html
+          echo "<ul>" >> index.html
+          
+          for dir in */; do
+            if [ "$dir" != "./" ]; then
+              # Красивое имя для ссылки
+              link_name=${dir%/}
+              echo "<li>👉 <a href='$link_name/index.html'><b>$link_name</b></a> <small>(нажми для отчета)</small></li>" >> index.html
+            fi
+          done
+          
+          echo "</ul><br><p>Обновлено: $(date)</p></body></html>" >> index.html
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './final-site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
       
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20' # Рекомендуется стабильная LTS версия, 24 может быть слишком новой для некоторых action
-
-    - name: Run Function Validation
-      shell: bash
-      run: |
-        # Прокидываем путь к действию, чтобы работали импорты src внутри runner.py
-        export INPUT_FUNC_PATH="${{ github.workspace }}/${{ inputs.func_path }}"
-        export INPUT_SCHEMA_PATH="${{ github.workspace }}/${{ inputs.schema_path }}"
-        
-        # Переходим в папку действия для запуска uv run
-        cd ${{ github.action_path }}
-        
-        # Запускаем валидатор. 
-        # Важно: аргументы --func_path и --schema_path должны совпадать с parser в runner.py
-        uv run pytest runner.py
-      continue-on-error: true # Позволяет сгенерировать отчет даже если тест упал
-
-    - name: Generate Allure Report
-      uses: simple-elf/allure-report-action@master
-      if: always()
-      with:
-        allure_results: allure-results-functions
-        allure_report: allure-report-functions
-        allure_history: allure-history-functions
-        keep_reports: 20 
+      - name: Show Result
+        run: echo "✅ Общий сайт обновлен! Ссылка: ${{ steps.deployment.outputs.page_url }}"
