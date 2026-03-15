@@ -39,4 +39,4 @@ runs:
       with:
         allure_results: allure-results-functions
         allure_report: allure-report-functions
-        gh_pages: false
+        gh_pages: true
