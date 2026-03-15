@@ -1,0 +1,44 @@
+name: 'AI Function & Schema Validator'
+
+inputs:
+  func_path:
+    description: 'Полный путь к .py файлу (напр. src/get_weather.py)'
+    required: true
+  schema_path:
+    description: 'Полный путь к .json файлу (напр. fixtures/get_weather.json)'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    - name: Install Python dependencies
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        uv sync
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+
+    - name: Run Function Validation
+      shell: bash
+      run: |
+        export PYTHONPATH=$PYTHONPATH:${{ github.action_path }}
+        uv run python ${{ github.action_path }}/runner.py \
+          --func "${{ github.workspace }}/${{ inputs.func_path }}" \
+          --schema "${{ github.workspace }}/${{ inputs.schema_path }}" \
+
+    - name: Generate Awesome Report
+      shell: bash
+      run: |
+        # Генерируем отчет ТОЛЬКО из папки результатов функций
+        npx allure awesome ${{ github.workspace }}/allure-results-functions \
+          --config ${{ github.action_path }}/allurerc.yaml \
+          --output ${{ github.workspace }}/allure-report-functions
