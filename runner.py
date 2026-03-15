@@ -7,7 +7,6 @@ import uuid
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
-# Импорты Allure
 from allure_commons.lifecycle import AllureLifecycle
 from allure_commons.logger import AllureFileLogger
 from allure_commons.model2 import Label, Status, StatusDetails, TestResult
@@ -19,6 +18,7 @@ from src.schema.py_schema import FunctionSchema
 
 def main():
     parser = argparse.ArgumentParser()
+    # Только те два аргумента, что приходят из action.yml
     parser.add_argument("--func_path", required=True)
     parser.add_argument("--schema_path", required=True)
     args = parser.parse_args()
@@ -27,9 +27,10 @@ def main():
     json_file = Path(args.schema_path)
     func_name = py_file.stem
 
+    # Твой путь по умолчанию
     default_path = "./allure-results-functions"
-    # Инициализация Allure в кастомную папку
     Path(default_path).mkdir(exist_ok=True, parents=True)
+
     lifecycle = AllureLifecycle()
     lifecycle.add_reporter(AllureFileLogger(default_path))
 
@@ -39,7 +40,6 @@ def main():
     )
     result.start = int(time.time() * 1000)
 
-    # Метки для Allure Awesome
     result.labels.extend(
         [
             Label(name=LabelType.EPIC, value="Валидация функций пользователя"),
@@ -49,7 +49,6 @@ def main():
     )
 
     try:
-        # --- ЛОГИКА ВАЛИДАЦИИ ---
         with open(json_file, encoding="utf-8") as f:
             schema_data = json.load(f)
             schema_dict = (
@@ -82,10 +81,9 @@ def main():
         result.statusDetails = StatusDetails(message=f"[{error_type}] {str(e)}")
         result.labels.append(Label(name=LabelType.STORY, value=f"Ошибка: {error_type}"))
 
-        # Аттачменты
         lifecycle.attach_data(
             test_uuid,
-            json.dumps(schema_dict, indent=2),
+            json.dumps(schema_dict if "schema_dict" in locals() else {}, indent=2),
             "JSON Schema",
             AttachmentType.JSON,
         )

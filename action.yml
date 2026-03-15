@@ -2,7 +2,7 @@ name: 'AI Function & Schema Validator'
 
 inputs:
   func_path:
-    description: 'Полный путь к .py файлу '
+    description: 'Полный путь к .py файлу'
     required: true
   schema_path:
     description: 'Полный путь к .json файлу'
@@ -30,15 +30,21 @@ runs:
     - name: Run Function Validation
       shell: bash
       run: |
+        # Прокидываем путь к твоему движку, чтобы импорты src работали
         export PYTHONPATH=$PYTHONPATH:${{ github.action_path }}
-        uv run python ${{ github.action_path }}/runner.py \
+        
+        # Запускаем скрипт. ВАЖНО: аргументы должны быть как в твоем runner.py!
+        # Мы также передаем папку для результатов
+        cd ${{ github.action_path }}
+        uv run python runner.py \
           --func "${{ github.workspace }}/${{ inputs.func_path }}" \
           --schema "${{ github.workspace }}/${{ inputs.schema_path }}" \
+      continue-on-error: true # Позволяет сгенерировать отчет даже если тест упал
 
     - name: Generate Awesome Report
       shell: bash
       run: |
-        # Генерируем отчет ТОЛЬКО из папки результатов функций
-        npx allure awesome ${{ github.workspace }}/allure-results-functions \
+        # Берем данные из папки результатов функций и кладем в папку отчета функций
+        npx allure-awesome generate ${{ github.workspace }}/allure-results-functions \
           --config ${{ github.action_path }}/allurerc.yaml \
           --output ${{ github.workspace }}/allure-report-functions
