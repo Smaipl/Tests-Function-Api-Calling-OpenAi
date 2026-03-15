@@ -4,8 +4,7 @@ on:
   workflow_run:
     workflows: ["Check My Functions"]
     types: [completed]
-  workflow_dispatch: # <--- Добавь эту строку для ручного теста
-
+  workflow_dispatch: 
 permissions:
   contents: read
   pages: write
