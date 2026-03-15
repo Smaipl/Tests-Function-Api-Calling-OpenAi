@@ -32,16 +32,15 @@ runs:
       shell: bash
       run: |
         # Прокидываем путь к действию, чтобы работали импорты src внутри runner.py
-        export PYTHONPATH=$PYTHONPATH:${{ github.action_path }}
+        export INPUT_FUNC_PATH="${{ github.workspace }}/${{ inputs.func_path }}"
+        export INPUT_SCHEMA_PATH="${{ github.workspace }}/${{ inputs.schema_path }}"
         
         # Переходим в папку действия для запуска uv run
         cd ${{ github.action_path }}
         
         # Запускаем валидатор. 
         # Важно: аргументы --func_path и --schema_path должны совпадать с parser в runner.py
-        uv run python runner.py \
-          --func_path "${{ github.workspace }}/${{ inputs.func_path }}" \
-          --schema_path "${{ github.workspace }}/${{ inputs.schema_path }}"
+        uv run pytest runner.py
       continue-on-error: true # Позволяет сгенерировать отчет даже если тест упал
 
     - name: Generate Allure Report
