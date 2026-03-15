@@ -1,5 +1,5 @@
 name: Dashboard tests for Tests-Function-Api-Calling-OpenAi
-output: ./allure-report
+# output: ./allure-report
 
 # historyPath: ./history.jsonl
 appendHistory: false
