@@ -1,41 +1,47 @@
 name: 'AI Function & Schema Validator'
-description: 'Валидация функции и генерация Allure отчета'
+description: 'Валидация функций и генерация отчета'
 
 inputs:
   func_path:
-    description: 'Путь к .py файлу относительно корня репозитория'
+    description: 'Путь к .py файлу функции'
     required: true
   schema_path:
-    description: 'Путь к .json файлу относительно корня репозитория'
+    description: 'Путь к .json файлу схемы'
     required: true
+
 
 runs:
   using: 'composite'
   steps:
-    # 1. Установка зависимостей
-    - name: Install Dependencies
-      shell: bash
-      run: |
-        pip install pytest allure-pytest pydantic
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
 
-    # 2. Запуск валидации
-    - name: Run Validation
+    - name: Run Pytest Validation
       shell: bash
-      env:
-        FUNC_PATH: ${{ github.workspace }}/${{ inputs.func_path }}
-        SCHEMA_PATH: ${{ github.workspace }}/${{ inputs.schema_path }}
-        ACTION_PATH: ${{ github.action_path }}
       run: |
-        export PYTHONPATH="$PYTHONPATH:$ACTION_PATH"
-        # Запускаем runner.py (убедись, что он читает переменные окружения FUNC_PATH и SCHEMA_PATH)
-        python "$ACTION_PATH/runner.py"
+        # Заходим в папку экшена для синхронизации зависимостей
+        cd ${{ github.action_path }}
+        uv sync
+        
+        # Прокидываем пути. ВАЖНО: PYTHONPATH должен видеть src внутри экшена
+        export PYTHONPATH="$PYTHONPATH:${{ github.action_path }}"
+        export INPUT_FUNC_PATH="${{ github.workspace }}/${{ inputs.func_path }}"
+        export INPUT_SCHEMA_PATH="${{ github.workspace }}/${{ inputs.schema_path }}"
+        
+
+        uv run pytest "${{ github.action_path }}/runner.py" 
       continue-on-error: true
 
-    # 3. Генерация HTML отчета через готовое действие
     - name: Generate Allure Report
-      if: always()
-      uses: simple-elf/allure-report-action@master
-      with:
-        allure_results: allure-results-functions
-        allure_report: allure-report-functions
-        gh_pages: false
+      shell: bash
+      run: |
+        # Устанавливаем Node зависимости для Allure Awesome, если их нет
+        if [ ! -d "${{ github.action_path }}/node_modules" ]; then
+          cd ${{ github.action_path }} && npm install
+        fi
+
+        # Генерируем отчет из результатов работы pytest
+        npx allure awesome ${{ github.workspace }}/allure-results \
+          --config ${{ github.action_path }}/allurerc.yaml 
