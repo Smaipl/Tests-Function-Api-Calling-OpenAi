@@ -1,11 +1,12 @@
 name: 'AI Function & Schema Validator'
+description: 'Действие для валидации Python функции против JSON схемы и генерации Allure отчета'
 
 inputs:
   func_path:
-    description: 'Полный путь к .py файлу'
+    description: 'Относительный путь к .py файлу в рабочем репозитории'
     required: true
   schema_path:
-    description: 'Полный путь к .json файлу'
+    description: 'Относительный путь к .json файлу в рабочем репозитории'
     required: true
 
 runs:
@@ -25,26 +26,35 @@ runs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '24'
+        node-version: '20' # Рекомендуется стабильная LTS версия, 24 может быть слишком новой для некоторых action
 
     - name: Run Function Validation
       shell: bash
       run: |
-        # Прокидываем путь к твоему движку, чтобы импорты src работали
+        # Прокидываем путь к действию, чтобы работали импорты src внутри runner.py
         export PYTHONPATH=$PYTHONPATH:${{ github.action_path }}
         
-        # Запускаем скрипт. ВАЖНО: аргументы должны быть как в твоем runner.py!
-        # Мы также передаем папку для результатов
+        # Переходим в папку действия для запуска uv run
         cd ${{ github.action_path }}
+        
+        # Запускаем валидатор. 
+        # Важно: аргументы --func_path и --schema_path должны совпадать с parser в runner.py
         uv run python runner.py \
-          --func "${{ github.workspace }}/${{ inputs.func_path }}" \
-          --schema "${{ github.workspace }}/${{ inputs.schema_path }}" \
+          --func_path "${{ github.workspace }}/${{ inputs.func_path }}" \
+          --schema_path "${{ github.workspace }}/${{ inputs.schema_path }}"
       continue-on-error: true # Позволяет сгенерировать отчет даже если тест упал
 
     - name: Generate Awesome Report
       shell: bash
       run: |
-        # Берем данные из папки результатов функций и кладем в папку отчета функций
-        npx allure-awesome generate ${{ github.workspace }}/allure-results-functions \
+        # Создаем директорию для отчета, если нет
+        mkdir -p ${{ github.workspace }}/allure-report-functions
+        
+        # Генерируем HTML отчет из результатов
+        # Путь к результатам жестко задан в runner.py как ./allure-results-functions относительно места запуска или cwd
+        # Убедимся, что мы в workspace или передадим абсолютный путь, если allure-awesome требует
+        cd ${{ github.workspace }}
+        
+        npx allure-awesome generate ./allure-results-functions \
           --config ${{ github.action_path }}/allurerc.yaml \
-          --output ${{ github.workspace }}/allure-report-functions
+          --output ./allure-report-functions
