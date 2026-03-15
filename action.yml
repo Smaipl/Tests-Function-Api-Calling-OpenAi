@@ -43,36 +43,19 @@ runs:
     - name: Generate Allure Report
       shell: bash
       run: |
-        # 1. Определяем пути АБСОЛЮТНО (в workspace пользователя)
+        # Используем переменные Гитхаба напрямую для надежности
         RESULTS_DIR="${{ github.workspace }}/allure-results"
         REPORT_DIR="${{ github.workspace }}/allure-report"
         
-        echo "📂 Результаты тестов: $RESULTS_DIR"
-        echo "📦 Папка для отчета: $REPORT_DIR"
-
-        # 2. Проверка (на всякий случай)
-        if [ ! -d "$RESULTS_DIR" ] || [ -z "$(ls -A $RESULTS_DIR)" ]; then
-          echo "❌ Ошибка: Нет результатов тестов для генерации отчета!"
-          exit 1
-        fi
-
-        # 3. Установка Node зависимостей (если нет)
+        # 1. Сначала ставим зависимости ТАМ, ГДЕ ЛЕЖИТ ЭКШЕН
         if [ ! -d "${{ github.action_path }}/node_modules" ]; then
           cd ${{ github.action_path }} && npm install
         fi
 
-        # 4. ГЕНЕРАЦИЯ ОТЧЕТА С ЯВНЫМ ВЫХОДОМ В НУЖНУЮ ПАПКУ
-        # Флаг --output гарантирует, что папка создастся именно в $REPORT_DIR
+        # 2. ПЕРЕХОДИМ В КОРЕНЬ ПРОЕКТА (Workspace), чтобы пути были "родными"
+        cd ${{ github.workspace }}
+
         echo "🚀 Генерация HTML отчета..."
-        npx allure awesome "$RESULTS_DIR" \
-          --config ${{ github.action_path }}/allurerc.yaml \
-          --output "$REPORT_DIR"
-          
-        # 5. Проверка успеха
-        if [ -d "$REPORT_DIR" ] && [ "$(ls -A $REPORT_DIR)" ]; then
-          echo "✅ Отчет успешно создан в $REPORT_DIR"
-          ls -la "$REPORT_DIR"
-        else
-          echo "❌ Ошибка: Отчет не был создан по пути $REPORT_DIR"
-          exit 1
-        fi
+        # Вызываем npx через полный путь к экшену, но в контексте Workspace
+        npx --prefix ${{ github.action_path }} allure awesome "$RESULTS_DIR" \
+          --config ${{ github.action_path }}/allurerc.yaml 
