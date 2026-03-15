@@ -2,10 +2,9 @@ name: Collect & Deploy All Reports
 
 on:
   workflow_run:
-    workflows: 
-      - "Check My Functions"  # Должно совпадать с name в workflow разработчиков
-    types:
-      - completed
+    workflows: ["Check My Functions"]
+    types: [completed]
+  workflow_dispatch: # <--- Добавь эту строку для ручного теста
 
 permissions:
   contents: read
