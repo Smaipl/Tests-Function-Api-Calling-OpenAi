@@ -58,4 +58,5 @@ runs:
         echo "🚀 Генерация HTML отчета..."
         # Вызываем npx через полный путь к экшену, но в контексте Workspace
         npx --prefix ${{ github.action_path }} allure awesome "$RESULTS_DIR" \
-          --config ${{ github.action_path }}/allurerc.yaml 
+          --config ${{ github.action_path }}/allurerc.yaml \
+          --output "$REPORT_DIR"
