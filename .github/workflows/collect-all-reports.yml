@@ -22,17 +22,17 @@ jobs:
       - name: Checkout Central Repo
         uses: actions/checkout@v4
 
-      - name: Download All Artifacts
+      - name: Download Latest Report Artifact
         uses: actions/download-artifact@v4
         with:
           pattern: report-*
           merge-multiple: false
           path: ./raw-artifacts
-          # Указываем репозиторий и ID запуска из триггера
-          repository: ${{ github.event.workflow_run.repository.full_name }}
-          run-id: ${{ github.event.workflow_run.id }}
-          # !!! ГЛАВНОЕ: Передаем токен с правами на чтение в другом репо !!!
-          github-token: ${{ secrets.CROSS_REPO_TOKEN }} 
+          # Жестко указываем репозиторий, где лежат тесты (источник)
+          repository: logg1n/mock-rep-for-Tests-Function-Api-Calling-OpenAi
+          # ВАЖНО: Убираем run-id, чтобы скачать ПОСЛЕДНИЙ успешный артефакт
+          # github-token нужен для доступа к чужому репо
+          github-token: ${{ secrets.CROSS_REPO_TOKEN }}
         continue-on-error: true
 
       - name: Organize Reports
