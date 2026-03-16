@@ -28,9 +28,11 @@ jobs:
           pattern: report-*
           merge-multiple: false
           path: ./raw-artifacts
-          # Явно указываем репозиторий и ID запуска, который нас триггернул
+          # Указываем репозиторий и ID запуска из триггера
           repository: ${{ github.event.workflow_run.repository.full_name }}
           run-id: ${{ github.event.workflow_run.id }}
+          # !!! ГЛАВНОЕ: Передаем токен с правами на чтение в другом репо !!!
+          github-token: ${{ secrets.CROSS_REPO_TOKEN }} 
         continue-on-error: true
 
       - name: Organize Reports
