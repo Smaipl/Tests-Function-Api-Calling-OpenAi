@@ -8,6 +8,7 @@ from openai.types.chat import (
 )
 from openai.types.shared_params.function_definition import FunctionDefinition
 
+from src.exceptions.custom_exceptions import LLMGenerationError
 from src.schema.client_schema import ClientModel, ModelConfig, RouterConfig
 from src.schema.json_schema import Schema
 
@@ -81,4 +82,6 @@ class ModelInterface:
         if message.content:
             raise Exception(f"Текст вместо функции: {message.content[:50]}...")
 
-        raise Exception("Пустой ответ от модели.")
+        raise LLMGenerationError(
+            message="Пустой ответ от модели (ни текста, ни функций)"
+        )
