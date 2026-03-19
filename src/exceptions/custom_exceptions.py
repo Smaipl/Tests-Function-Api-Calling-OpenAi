@@ -65,3 +65,15 @@ class DefaultValueMismatch(BaseFunctionException):
     """Ошибка: значение по умолчанию в коде не совпадает с дефолтом в схеме."""
 
     pass
+
+
+class LLMGenerationError(BaseFunctionException):
+    """Ошибка самой генерации (лимиты, фильтры)"""
+
+    pass
+
+
+class LLMMismatchError(BaseFunctionException):
+    """Ошибка логики (не та функция, просто текст)"""
+
+    pass
