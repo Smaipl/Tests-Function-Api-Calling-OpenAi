@@ -92,26 +92,36 @@ class RouterConfig(BaseModel):
                 )
 
 
-class RootConfig(BaseModel):
-    aggregator: RouterConfig
-    queries: list[str]
-
-    @model_validator(mode="before")
-    @classmethod
-    def wrap_queries(cls, data: Any) -> Any:
-        if isinstance(data, dict) and "queries" in data:
-            if isinstance(data["queries"], list) and len(data["queries"]) > 0:
-                if isinstance(data["queries"][0], dict):
-                    data["queries"] = [q.get("query") for q in data["queries"]]
-        return data
-
-
 class ClientModel(BaseModel):
-
-    aggregator: RouterConfig
+    router: RouterConfig
+    queries: list[str] = Field(default_factory=list)
 
     _request_token: int = PrivateAttr(default=0)
     _response_token: int = PrivateAttr(default=0)
     _total_token: int = PrivateAttr(default=0)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def prepare_all_data(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+
+        if "queries" in data and isinstance(data["queries"], list):
+            data["queries"] = [
+                (q.get("query") if isinstance(q, dict) else q)
+                for q in data["queries"]
+                if q
+            ]
+        return data
+
+    @property
+    def usage_report(self) -> str:
+        """Красивый отчет о расходе токенов"""
+        return (
+            f"\n📊 ИТОГО ПОТРАЧЕНО:\n"
+            f"   - Входящие: {self._request_token}\n"
+            f"   - Исходящие: {self._response_token}\n"
+            f"   - Всего:     {self._total_token}"
+        )
