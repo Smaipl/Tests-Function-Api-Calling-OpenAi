@@ -1,4 +1,0 @@
-1 validation error for Schema
-parameters.type
-  Field required [type=missing, input_value={'properties': {'prompt':...': ''}}, 'required': []}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.12/v/missing

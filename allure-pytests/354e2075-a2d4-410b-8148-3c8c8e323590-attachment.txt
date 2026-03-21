@@ -1,7 +1,0 @@
-def function_name(arguments):
-    v1, v2, v3, v4 = (
-        arguments.get("prompt", ""), 
-        arguments.get("limit", 10), 
-        arguments.get("is_active", True),
-        arguments.get("bla_bla_bla", True)
-    )

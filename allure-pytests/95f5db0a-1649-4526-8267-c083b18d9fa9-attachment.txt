@@ -1,1 +1,0 @@
-Найдено: InfoArg(stroke=3, key='mode', val='fast')

@@ -1,1 +1,0 @@
-Найдено: InfoArg(stroke=2, key='prompt', val='')
