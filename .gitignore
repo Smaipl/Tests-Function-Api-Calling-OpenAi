@@ -37,10 +37,11 @@ htmlcov/
 .tox/
 .nox/
 .hypothesis/
+tests/
+mock/
 
 # Allure отчеты и результаты
-allure-results/
-allure-report/
+allure-*
 
 # Типизация и линтеры
 .mypy_cache/
@@ -99,3 +100,4 @@ desktop.ini
 
 celerybeat-schedule
 celerybeat.pid
+ghost/
