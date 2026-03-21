@@ -1,3 +1,0 @@
-def function_name(arguments):
-    if True:
-        mode = arguments.get("mode", "fast")

@@ -1,2 +1,0 @@
-def function_name(arguments):
-    v1 = arguments.get('prompt', '')

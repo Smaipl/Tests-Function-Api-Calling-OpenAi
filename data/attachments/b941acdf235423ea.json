@@ -1,9 +1,0 @@
-{
-  "name": "all_empty_test",
-  "description": "Тест: и properties, и required пустые (крайний случай)",
-  "parameters": {
-    "type": "object",
-    "properties": {},
-    "required": []
-  }
-}
